@@ -9,7 +9,7 @@ describe('Component : AppComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
-        StoreModule.provideStore({}), 
+        StoreModule.provideStore({}),
         HttpModule
       ],
       declarations: [
