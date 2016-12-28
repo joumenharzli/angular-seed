@@ -21,7 +21,7 @@ const tsc = require("gulp-typescript");
 const sourcemaps = require('gulp-sourcemaps');
 const plumber = require("gulp-plumber");
 const uglify = require('gulp-uglify');
-const liveServer = require('gulp-live-server');
+const browserSync = require('browser-sync').create();
 const concat = require('gulp-concat');
 const replace = require('gulp-replace');
 const showMessage = require('gulp-msg');
@@ -32,7 +32,7 @@ const symlink = require('gulp-sym');
 */
 const BUILD_DIR = 'dist';
 const SRC_DIR = 'src';
-const SRV_PORT = 8080;
+const SRV_PORT = 8888;
 
 const APP_BUILD_DIR = BUILD_DIR + '/app';
 const TEST_BUILD_DIR = BUILD_DIR + '/test';
@@ -76,6 +76,16 @@ gulp.task("clean:dist", function (callback) {
 );
 
 /*
+    Delete app dir
+*/
+gulp.task("clean:app", function (callback) {
+    showMessage.Info("Deleting app dir");
+    del.sync(APP_BUILD_DIR);
+    callback();
+}
+);
+
+/*
     Delete the assets dir
 */
 gulp.task("clean:assets", function (callback) {
@@ -87,13 +97,15 @@ gulp.task("clean:assets", function (callback) {
 /*
     Delete the generated files from app dir 
 */
-gulp.task("clean:app", function (callback) {
+gulp.task("clean:appjs", function (callback) {
     showMessage.Info("Deleting generated files from app dir");
     del.sync([
         APP_BUILD_DIR + '/**',
         '!' + APP_BUILD_DIR,
         '!' + ASSETS_BUILD_DIR,
         '!' + ASSETS_BUILD_DIR + '/**',
+        '!' + APP_BUILD_DIR + '/node_modules',
+        '!' + APP_BUILD_DIR + '/node_modules/**',
         '!' + APP_BUILD_DIR + '/index.html',
         '!' + APP_BUILD_DIR + '/systemjs.config.js'
     ]);
@@ -153,17 +165,6 @@ gulp.task("lint", function () {
         }));
 });
 
-/*
-    Run gulp live server and reload server when changes
-*/
-gulp.task('serve', function () {
-    var server = liveServer.static(APP_BUILD_DIR, SRV_PORT);
-    server.start();
-    gulp.watch(APP_BUILD_DIR + '/**/*',
-        function (file) {
-            server.notify(file);
-        });
-});
 
 /*
     Copy resources from source to assets dir
@@ -213,7 +214,7 @@ function compileFiles(dieIfFailed, filesSrc, callback) {
 /*
     Compile .ts from app src and die if failed used when building the project
 */
-gulp.task("build:global:compile:app", ["clean:app"], function (callback) {
+gulp.task("build:global:compile:app", ["clean:appjs"], function (callback) {
     showMessage.Info("Compiling application files");
     compileFiles(true, APP_SRC_DIR + '/**/*.ts', callback);
 });
@@ -221,7 +222,7 @@ gulp.task("build:global:compile:app", ["clean:app"], function (callback) {
 /*
     Compile .ts from app src and continue if failed used when developping the project
 */
-gulp.task("build:global:compile:app:nostop", ["clean:app"], function (callback) {
+gulp.task("build:global:compile:app:nostop", ["clean:appjs"], function (callback) {
     showMessage.Info("Compiling application files");
     compileFiles(false, APP_SRC_DIR + '/**/*.ts', callback);
 });
@@ -378,7 +379,7 @@ gulp.task("build:prod:index", ["build:prod:mainjs", "build:prod:vendors", "clean
     Generating application for production
 */
 gulp.task("build:prod", function (callback) {
-    runSequence('build:global:copyresources', 'build:prod:index', 'clean:app', callback);
+    runSequence("clean:app", 'build:global:copyresources', 'build:prod:index', 'clean:appjs', callback);
 });
 
 /*
@@ -448,19 +449,57 @@ gulp.task("build:dev:index", ["build:dev:copylibs", "build:dev:systemjs", "build
     Generating application for developpement
 */
 gulp.task("build:dev", function (callback) {
-    runSequence('build:global:copyresources', 'build:dev:index', callback);
+    runSequence("clean:app", 'build:global:copyresources', 'build:dev:index', callback);
 });
 
 /*
-    Run gulp live server and reload server when changes in application sources and ressources
+    [ Server tasks ]
 */
-gulp.task('serve:dev', function () {
-    var server = liveServer.static(APP_BUILD_DIR, SRV_PORT);
-    server.start();
-    gulp.watch(APP_BUILD_DIR + '/**/*',
-        function (file) {
-            server.notify(file);
-        });
-    gulp.watch(APP_SRC_DIR + '/**/*.ts', ["build:global:compile:app"]);
-    gulp.watch(RES_SRC_DIR + '/**/*', ["build:global:copyresources"]);
+
+/* 
+    Reloading the server
+*/
+gulp.task("reloadserver", function (callback) {
+    browserSync.reload();
+    callback();
+});
+
+/*
+    Compile Application and reload Server
+*/
+gulp.task("compileandreload", function (callback) {
+    runSequence("build:global:compile:app", "reloadserver", callback);
+});
+
+/*
+   Copy resources and reload server 
+*/
+gulp.task("copyresandreload", function (callback) {
+    runSequence("build:global:copyresources", "reloadserver", callback);
+});
+
+/*
+    Run gulp live server and reload server when changes
+*/
+gulp.task('serve', ["build:dev"], function () {
+    browserSync.init({
+        port: SRV_PORT,
+        server: {
+            baseDir: APP_BUILD_DIR + '/'
+        }
+    });
+    gulp.watch(APP_SRC_DIR + '/**/*.ts', ["compileandreload"]);
+    gulp.watch(RES_SRC_DIR + '/**/*', ["copyresandreload"]);
+});
+
+/*
+    Run gulp live server and reload server when changes
+*/
+gulp.task('serve:simple', function () {
+    browserSync.init({
+        port: SRV_PORT,
+        server: {
+            baseDir: APP_BUILD_DIR + '/'
+        }
+    });
 });

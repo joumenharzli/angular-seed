@@ -9,6 +9,7 @@
     "clean:assets": "gulp clean:assets",
     "clean:app": "gulp clean:app",
     "clean:test": "gulp clean:test",
+    "clean:appjs": "gulp clean:appjs",
     "lint": "gulp lint",
     "compile": "gulp build:global:compile:app",
     "compile:reload": "gulp build:global:compile:app:watch",
@@ -19,8 +20,7 @@
     "test:reload": "gulp test:karma",
     "build:dev": "gulp build:dev",
     "build:prod": "build:prod",
-    "serve": "gulp serve",
-    "dev": "build:dev && gulp serve:dev"
+    "serve": "gulp serve"
   },
   "dependencies": {
     "@angular/common": "^2.4.1",
@@ -43,11 +43,11 @@
   "devDependencies": {
     "@types/jasmine": "^2.5.38",
     "@types/node": "^6.0.53",
+    "browser-sync": "^2.18.5",
     "codelyzer": "^2.0.0-beta.4",
     "del": "^2.2.2",
     "gulp": "^3.9.1",
     "gulp-concat": "^2.6.1",
-    "gulp-live-server": "^0.0.30",
     "gulp-msg": "^0.0.1",
     "gulp-plumber": "^1.1.0",
     "gulp-replace": "^0.5.4",

@@ -7,8 +7,14 @@ Maven-like seed for angular projects featuring rxjs, ngrx, karma, gulp, yarn and
 # download the project
 git clone https://github.com/joumenharzli/angular-seed.git
 
-# install dependencies
-yarn install
+# install gulp
+npm install -g gulp
+
+# install yarn
+npm install -g yarn
+
+# install seed dependencies
+yarn
 ```
 
 # How to use
