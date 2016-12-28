@@ -1,19 +1,26 @@
 {
   "name": "angular-plugnplay-seed",
-  "version": "1.0.0",
+  "version": "0.0.0-SNAPSHOT",
   "description": "Maven-like seed for angular projects",
   "author": "Harzli Joumen",
   "license": "MIT",
   "scripts": {
     "clean": "gulp clean:dist",
+    "clean:assets": "gulp clean:assets",
+    "clean:app": "gulp clean:app",
+    "clean:test": "gulp clean:test",
     "lint": "gulp lint",
     "compile": "gulp build:global:compile:app",
-    "build:dev": "gulp clean:dist && gulp build:global:copyresources && gulp build:dev:copylibs && gulp build:dev:index && gulp build:dev:systemjs && gulp build:global:compile:app",
-    "build:prod": "gulp clean:dist && gulp build:global:copyresources && gulp build:prod:index && gulp build:prod:vendors && gulp build:global:compile:app && gulp build:prod:mainjs && gulp clean:app:js",
+    "compile:reload": "gulp build:global:compile:app:watch",
     "test:generatespec": "gulp test:generatespec",
     "test:compile": "gulp test:compile",
-    "test": "karma start",
-    "serve": "gulp serve && build:dev"
+    "test:compilereload": "gulp test:compile:watch",
+    "test": "gulp test:karma:once",
+    "test:reload": "gulp test:karma",
+    "build:dev": "gulp build:dev",
+    "build:prod": "build:prod",
+    "serve": "gulp serve",
+    "dev": "build:dev && gulp serve:dev"
   },
   "dependencies": {
     "@angular/common": "^2.4.1",
