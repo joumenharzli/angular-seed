@@ -1,4 +1,7 @@
 # Angular Plug n Play Seed
+[![Dependency Status](https://david-dm.org/joumenharzli/angular-seed.svg)](https://david-dm.org/joumenharzli/angular-seed)
+[![devDependency Status](https://david-dm.org/joumenharzli/angular-seed/dev-status.svg)](https://david-dm.org/joumenharzli/angular-seed#info=devDependencies)
+
 Maven-like seed for angular projects featuring rxjs, ngrx, karma, gulp, yarn and more ready for development and production mode
 
 # How to start
