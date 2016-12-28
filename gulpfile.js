@@ -397,20 +397,9 @@ gulp.task("build:dev:copylibs", function (callback) {
 });
 
 /*
-    Link node_modules
-*/
-gulp.task("build:dev:link", function () {
-    return gulp
-        .src('node_modules')
-        .pipe(symlink(APP_BUILD_DIR + '/node_modules'))
-        .on("end", function () {
-            showMessage.Success("node_modules link created");
-        });
-});
-/*
     edit systemjs and copy it
  */
-gulp.task("build:dev:systemjs", ["build:dev:link", "clean:index"], function (callback) {
+gulp.task("build:dev:systemjs", ["clean:index"], function (callback) {
     gulp.src(['systemjs.config.js'])
         .pipe(replace('dist/app', '.'))
         .pipe(gulp.dest(APP_BUILD_DIR + '/'))
@@ -485,7 +474,12 @@ gulp.task('serve', ["build:dev"], function () {
     browserSync.init({
         port: SRV_PORT,
         server: {
-            baseDir: APP_BUILD_DIR + '/'
+            baseDir: APP_BUILD_DIR + '/',
+            index: 'index.html',
+            routes: {
+                "/assets": ASSETS_BUILD_DIR,
+                "/node_modules": 'node_modules'
+            }
         }
     });
     gulp.watch(APP_SRC_DIR + '/**/*.ts', ["compileandreload"]);
