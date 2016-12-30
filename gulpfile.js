@@ -25,7 +25,6 @@ const browserSync = require('browser-sync').create();
 const concat = require('gulp-concat');
 const replace = require('gulp-replace');
 const showMessage = require('gulp-msg');
-const symlink = require('gulp-sym');
 
 /*
     Configuration
@@ -235,6 +234,21 @@ gulp.task("build:global:compile:app:watch", ["build:global:compile:app:nostop"],
 });
 
 /*
+    function to change the environment mode
+*/
+function setEnvironment(prod) {
+    let mode;
+    const tsProject = tsc.createProject("tsconfig.json");
+    mode = (prod) ? 'prod' : 'dev';
+    gulp.src([APP_BUILD_DIR + '/environment.js'])
+        .pipe(replace('%REPLACEME%', mode))
+        .pipe(gulp.dest(APP_BUILD_DIR))
+        .on('end', function () {
+            showMessage.Success("Environment configured");
+        });
+}
+
+/*
     [ Testing tasks ]
     used for tests
 */
@@ -320,6 +334,14 @@ gulp.task('test:karma', ["build:global:compile:app", "test:compile"], function (
     [ Production tasks ]
     used in production mode
 */
+
+/* Configure the environment */
+gulp.task("build:configure:prod", ['build:global:compile:app'], function (callback) {
+    showMessage.Success('Configuruing environment');
+    setEnvironment(true);
+    callback();
+});
+
 /* 
     Bundle libs into vendors.min.js
 */
@@ -338,7 +360,7 @@ gulp.task("build:prod:vendors", ["clean:bundles:vendors"], function (callback) {
 /* 
     Bundle compiled files into app.min.js
 */
-gulp.task("build:prod:mainjs", ["build:global:compile:app", "clean:bundles:app"], function (callback) {
+gulp.task("build:prod:mainjs", ["build:configure:prod", "clean:bundles:app"], function (callback) {
     showMessage.Info("Generating app bundle");
     /* Load SystemJS configuration */
     showMessage.Info("Loading SystemJS configuration");
@@ -386,6 +408,15 @@ gulp.task("build:prod", function (callback) {
     [ Developpement tasks ]
     used in developpement mode
 */
+/*
+    Configure the environment
+*/
+gulp.task("build:configure:dev", function (callback) {
+    showMessage.Success('Configuruing environment');
+    setEnvironment(false);
+    callback();
+});
+
 /*
     copy the libs used by angular
 */
@@ -438,7 +469,7 @@ gulp.task("build:dev:index", ["build:dev:copylibs", "build:dev:systemjs", "build
     Generating application for developpement
 */
 gulp.task("build:dev", function (callback) {
-    runSequence("clean:app", 'build:global:copyresources', 'build:dev:index', callback);
+    runSequence("clean:app", 'build:global:copyresources', 'build:dev:index', 'build:configure:dev', callback);
 });
 
 /*
