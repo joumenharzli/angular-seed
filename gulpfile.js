@@ -488,7 +488,7 @@ gulp.task("reloadserver", function (callback) {
     Compile Application and reload Server
 */
 gulp.task("compileandreload", function (callback) {
-    runSequence("build:global:compile:app", "reloadserver", callback);
+    runSequence("build:global:compile:app:nostop", "reloadserver", callback);
 });
 
 /*
