@@ -19,7 +19,28 @@ npm install -g yarn
 
 # install seed dependencies
 yarn
+
+# start developing
+npm run serve
 ```
+
+# Features
+
+- SystemJS for module loading
+- Supports Production and Developing mode
+- Included library: RxJS, ngrx
+- You can test with karma and jasmin and generate blank spec
+- Gulp for tasks running
+- Yarn for dependency management
+
+# Comming Soon
+
+- support for less and sass
+- optimized building with rollup and aot
+- including ImmutableJS and lodash
+- protactor
+- version control
+- change log generator 
 
 # How to use
 
