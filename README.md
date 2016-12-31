@@ -27,8 +27,9 @@ npm run serve
 # Features
 
 - SystemJS for module loading
-- Supports Production and Developing mode
+- Can be used in Production and Developing mode
 - Included library: RxJS, ngrx
+- Supports less and sass including autoprefixer
 - You can test with karma and jasmin and generate blank spec
 - Gulp for tasks running
 - Yarn for dependency management
@@ -42,11 +43,21 @@ npm run serve
 - version control
 - change log generator 
 
+# Notes
+
+- Add underscore ( _ ) to less and sass partials
+
 # How to use
 
 ```bash
 # clean dist directory
 npm run clean
+
+# compile less files
+npm run stylesheet:less
+
+# compile scss files
+npm run stylesheet:sass
 
 # compile application
 npm run compile

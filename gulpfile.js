@@ -25,6 +25,10 @@ const browserSync = require('browser-sync').create();
 const concat = require('gulp-concat');
 const replace = require('gulp-replace');
 const showMessage = require('gulp-msg');
+const less = require('gulp-less');
+const sass = require('gulp-sass');
+const autoprefixer = require('gulp-autoprefixer');
+const csso = require('gulp-csso');
 
 /*
     Configuration
@@ -50,11 +54,26 @@ const RES_SRC_DIR = SRC_DIR + '/resources';
 /*
     Libraries that bootstrap angular
 */
-var libs = [
+const libs = [
     'node_modules/core-js/client/shim.min.js',
     'node_modules/zone.js/dist/zone.js',
     'node_modules/reflect-metadata/Reflect.js',
     'node_modules/systemjs/dist/system.src.js',
+];
+
+/* 
+    Supported browsers used by autoprefixer
+*/
+const BROWSER_LIST = [
+    'ie >= 10',
+    'ie_mob >= 10',
+    'ff >= 30',
+    'chrome >= 34',
+    'safari >= 7',
+    'opera >= 23',
+    'ios >= 7',
+    'android >= 4.4',
+    'bb >= 10'
 ];
 
 /*
@@ -64,87 +83,96 @@ var libs = [
 /*
     [ Clean tasks ]
 */
+
+/**
+ *  function that delete files and folder
+ */
+function deleteAll(target, done) {
+    showMessage.Warning('Deleting ' + target);
+    del.sync(target);
+    showMessage.Success(target + ' deleted');
+    done();
+}
 /*
     Delete dist dir
 */
-gulp.task("clean:dist", function (callback) {
-    showMessage.Info("Deleting dist dir");
-    del.sync(BUILD_DIR);
-    callback();
-}
-);
+gulp.task("clean:dist", function (done) {
+    deleteAll(BUILD_DIR, done);
+});
 
 /*
     Delete app dir
 */
-gulp.task("clean:app", function (callback) {
-    showMessage.Info("Deleting app dir");
-    del.sync(APP_BUILD_DIR);
-    callback();
-}
-);
+gulp.task("clean:app", function (done) {
+    deleteAll(APP_BUILD_DIR, done);
+});
 
 /*
-    Delete the assets dir
+    Delete the js assets dir
 */
-gulp.task("clean:assets", function (callback) {
-    showMessage.Info("Deleting assets dir");
-    del.sync(ASSETS_BUILD_DIR);
-    callback();
+gulp.task("clean:assetsjs", function (done) {
+    deleteAll(JS_ASSETS_BUILD_DIR, done);
+});
+
+/*
+    Delete the img assets dir
+*/
+gulp.task("clean:assetsimg", function (done) {
+    deleteAll(IMG_ASSETS_BUILD_DIR, done);
+});
+
+/* 
+    Clean css and fonts in assets dir
+*/
+gulp.task("clean:stylesheet", function (done) {
+    deleteAll([FONTS_ASSETS_BUILD_DIR, CSS_ASSETS_BUILD_DIR], done);
 });
 
 /*
     Delete the generated files from app dir 
 */
-gulp.task("clean:appjs", function (callback) {
-    showMessage.Info("Deleting generated files from app dir");
+gulp.task("clean:appjs", function (done) {
+    showMessage.Warning("Deleting generated js and map files from app dir");
     del.sync([
         APP_BUILD_DIR + '/**',
         '!' + APP_BUILD_DIR,
         '!' + ASSETS_BUILD_DIR,
         '!' + ASSETS_BUILD_DIR + '/**',
-        '!' + APP_BUILD_DIR + '/node_modules',
-        '!' + APP_BUILD_DIR + '/node_modules/**',
+        //'!' + APP_BUILD_DIR + '/node_modules',
+        //'!' + APP_BUILD_DIR + '/node_modules/**',
         '!' + APP_BUILD_DIR + '/index.html',
         '!' + APP_BUILD_DIR + '/systemjs.config.js'
     ]);
-    callback();
+    showMessage.Success("Deleted generated js and map files from app dir");
+    done();
 });
 
 /*
     Delete the generated files in test dir 
 */
-gulp.task("clean:test", function (callback) {
-    showMessage.Info("Deleting generated files from test dir");
-    del.sync([TEST_BUILD_DIR]);
-    callback();
+gulp.task("clean:test", function (done) {
+    deleteAll(TEST_BUILD_DIR, done);
 });
 
 /*
     Cleaning app bundle
 */
-gulp.task("clean:bundles:app", function (callback) {
-    showMessage.Info("Deleting app bundle");
-    del.sync([JS_ASSETS_BUILD_DIR + '/app.min.js']);
-    callback();
+gulp.task("clean:bundles:app", function (done) {
+    deleteAll(JS_ASSETS_BUILD_DIR + '/app.min.js', done);
 });
 
 /*
     Cleaning vendors bundle
 */
-gulp.task("clean:bundles:vendors", function (callback) {
-    showMessage.Info("Deleting vendors bundles");
-    del.sync([JS_ASSETS_BUILD_DIR + '/vendors.min.js']);
-    callback();
+gulp.task("clean:bundles:vendors", function (done) {
+    deleteAll(JS_ASSETS_BUILD_DIR + '/vendors.min.js', done);
 });
 
 /*
     Cleaning index and systemjs
 */
-gulp.task("clean:index", function (callback) {
-    showMessage.Info("Deleting index and SystemJS configuration");
-    del.sync([APP_BUILD_DIR + '/index.html', APP_BUILD_DIR + '/systemjs.config.js']);
-    callback();
+gulp.task("clean:index", function (done) {
+    deleteAll([APP_BUILD_DIR + '/index.html', APP_BUILD_DIR + '/systemjs.config.js'], done);
 });
 
 /*
@@ -166,17 +194,15 @@ gulp.task("lint", function () {
 
 
 /*
-    Copy resources from source to assets dir
+    Copy image and js resources from source to assets dir
 */
-gulp.task("build:global:copyresources", ["clean:assets"], function (callback) {
-    showMessage.Info("Copying resources into assets dir");
+gulp.task("build:global:copyresources", ['stylesheet:less', 'stylesheet:sass', 'stylesheet:css', 'stylesheet:fonts', "clean:assetsjs", "clean:assetsimg"], function (done) {
+    showMessage.Warning("Copying resources into assets dir");
     gulp.src([
         RES_SRC_DIR + '/js/**/*',
         RES_SRC_DIR + '/img/**/*',
-        RES_SRC_DIR + '/css/**/*',
-        RES_SRC_DIR + '/fonts/**/*'
     ], { base: RES_SRC_DIR }).pipe(gulp.dest(ASSETS_BUILD_DIR));
-    callback();
+    done();
 });
 
 /*
@@ -184,8 +210,8 @@ gulp.task("build:global:copyresources", ["clean:assets"], function (callback) {
     dieIfFailed used to stop gulp execution it's used 
     when building the bundle 
  */
-function compileFiles(dieIfFailed, filesSrc, callback) {
-    var error;
+function compileFiles(dieIfFailed, filesSrc, done) {
+    let error;
     const tsProject = tsc.createProject("tsconfig.json");
     gulp.src(filesSrc)
         .pipe(plumber({
@@ -201,29 +227,29 @@ function compileFiles(dieIfFailed, filesSrc, callback) {
             if (!error) {
                 showMessage.Success('[Typescript] Compilation succeeded');
             } else {
-                showMessage.Error("[Typescript] Compilation failed");
+                showMessage.Error("[Typescript] Compilation failed " + error);
                 if (dieIfFailed) {
                     process.exit();
                 }
             }
-            callback();
+            done();
         });
 };
 
 /*
     Compile .ts from app src and die if failed used when building the project
 */
-gulp.task("build:global:compile:app", ["clean:appjs"], function (callback) {
-    showMessage.Info("Compiling application files");
-    compileFiles(true, APP_SRC_DIR + '/**/*.ts', callback);
+gulp.task("build:global:compile:app", ["clean:appjs"], function (done) {
+    showMessage.Warning("Compiling application files");
+    compileFiles(true, APP_SRC_DIR + '/**/*.ts', done);
 });
 
 /*
     Compile .ts from app src and continue if failed used when developping the project
 */
-gulp.task("build:global:compile:app:nostop", ["clean:appjs"], function (callback) {
-    showMessage.Info("Compiling application files");
-    compileFiles(false, APP_SRC_DIR + '/**/*.ts', callback);
+gulp.task("build:global:compile:app:nostop", ["clean:appjs"], function (done) {
+    showMessage.Warning("Compiling application files");
+    compileFiles(false, APP_SRC_DIR + '/**/*.ts', done);
 });
 
 /*
@@ -240,7 +266,7 @@ function setEnvironment(prod) {
     let mode;
     const tsProject = tsc.createProject("tsconfig.json");
     mode = (prod) ? 'prod' : 'dev';
-    gulp.src([APP_BUILD_DIR + '/environment.js'])
+    return gulp.src([APP_BUILD_DIR + '/environment.js'])
         .pipe(replace('%REPLACEME%', mode))
         .pipe(gulp.dest(APP_BUILD_DIR))
         .on('end', function () {
@@ -256,7 +282,7 @@ function setEnvironment(prod) {
     Create directory if it doesn't exists
 */
 function ensureDirectoryExistence(filePath) {
-    var dirname = path.dirname(filePath);
+    let dirname = path.dirname(filePath);
     if (fs.existsSync(dirname)) {
         return true;
     }
@@ -271,11 +297,11 @@ gulp.task('test:generatespec', function () {
     recursive('src/app', function (err, files) {
         files.forEach(file => {
             if (file.indexOf('component') > -1 || file.indexOf('service') > -1) {
-                var specFile = file.replace('.ts', '.spec.ts').replace('src/app', 'src/test');
+                const specFile = file.replace('.ts', '.spec.ts').replace('src/app', 'src/test');
                 if (!fs.existsSync(specFile)) {
-                    var content = "import * as Source from '";
-                    var fileArray = file.split('/');
-                    for (var i = 0; i < fileArray.length - 1; i++) {
+                    let content = "import * as Source from '";
+                    const fileArray = file.split('/');
+                    for (let i = 0; i < fileArray.length - 1; i++) {
                         content = content + '../';
                     }
                     content = content + file.replace('.ts', '') + "';\n";
@@ -290,17 +316,17 @@ gulp.task('test:generatespec', function () {
 /*
     Compile .ts from test src and die if failed used when building the project
 */
-gulp.task("test:compile", ["clean:test"], function (callback) {
-    showMessage.Info("Compiling test files");
-    compileFiles(true, TEST_SRC_DIR + '/**/*.ts', callback);
+gulp.task("test:compile", ["clean:test"], function (done) {
+    showMessage.Warning("Compiling test files");
+    compileFiles(true, TEST_SRC_DIR + '/**/*.ts', done);
 });
 
 /*
     Compile .ts from test src and continue if failed used when developping the project
 */
-gulp.task("test:compile:nostop", ["clean:test"], function (callback) {
-    showMessage.Info("Compiling test files");
-    compileFiles(false, TEST_SRC_DIR + '/**/*.ts', callback);
+gulp.task("test:compile:nostop", ["clean:test"], function (done) {
+    showMessage.Warning("Compiling test files");
+    compileFiles(false, TEST_SRC_DIR + '/**/*.ts', done);
 });
 
 /*
@@ -336,43 +362,43 @@ gulp.task('test:karma', ["build:global:compile:app", "test:compile"], function (
 */
 
 /* Configure the environment */
-gulp.task("build:configure:prod", ['build:global:compile:app'], function (callback) {
+gulp.task("build:configure:prod", ['build:global:compile:app'], function (done) {
     showMessage.Success('Configuruing environment');
     setEnvironment(true);
-    callback();
+    done();
 });
 
 /* 
     Bundle libs into vendors.min.js
 */
-gulp.task("build:prod:vendors", ["clean:bundles:vendors"], function (callback) {
-    showMessage.Info("Generating vendors bundle");
+gulp.task("build:prod:vendors", ["clean:bundles:vendors"], function (done) {
+    showMessage.Warning("Generating vendors bundle");
     gulp.src(libs)
         .pipe(concat('vendors.min.js'))
         .pipe(uglify())
         .pipe(gulp.dest(JS_ASSETS_BUILD_DIR + '/'))
         .on('end', function () {
             showMessage.Success("Bundling vendors succeeded");
-            callback();
+            done();
         });
 });
 
 /* 
     Bundle compiled files into app.min.js
 */
-gulp.task("build:prod:mainjs", ["build:configure:prod", "clean:bundles:app"], function (callback) {
-    showMessage.Info("Generating app bundle");
+gulp.task("build:prod:mainjs", ["build:configure:prod", "clean:bundles:app"], function (done) {
+    showMessage.Warning("Generating app bundle");
     /* Load SystemJS configuration */
-    showMessage.Info("Loading SystemJS configuration");
-    var builder = new sysBuilder('.', 'systemjs.config.js');
+    showMessage.Warning("Loading SystemJS configuration");
+    const builder = new sysBuilder('.', 'systemjs.config.js');
     /* Build */
-    showMessage.Info("Building bundle");
+    showMessage.Warning("Building bundle");
     builder.buildStatic('app', JS_ASSETS_BUILD_DIR + '/app.min.js', {
         minify: true
     })
         .then(function () {
             showMessage.Success("Bundling application succeeded");
-            callback();
+            done();
         })
         .catch(function (err) {
             showMessage.Error('Bundling application failed: ' + err);
@@ -383,8 +409,8 @@ gulp.task("build:prod:mainjs", ["build:configure:prod", "clean:bundles:app"], fu
 /* 
     Prepare the index for the production mode after injecting assets into it
 */
-gulp.task("build:prod:index", ["build:prod:mainjs", "build:prod:vendors", "clean:index"], function (callback) {
-    showMessage.Info("Generating index for production mode");
+gulp.task("build:prod:index", ["build:prod:mainjs", "build:prod:vendors", "clean:index"], function (done) {
+    showMessage.Warning("Generating index for production mode");
     gulp.src([RES_SRC_DIR + '/html/index.html'])
         .pipe(replace('<!-- build:vendors -->', '<script src="assets/js/vendors.min.js"></script>'))
         .pipe(replace('<!-- build:app -->', '<script src="assets/js/app.min.js"></script>'))
@@ -392,7 +418,7 @@ gulp.task("build:prod:index", ["build:prod:mainjs", "build:prod:vendors", "clean
         .pipe(gulp.dest(APP_BUILD_DIR + '/'))
         .on('end', function () {
             showMessage.Success("Index generated");
-            callback();
+            done();
         });
 });
 
@@ -400,8 +426,8 @@ gulp.task("build:prod:index", ["build:prod:mainjs", "build:prod:vendors", "clean
 /* 
     Generating application for production
 */
-gulp.task("build:prod", function (callback) {
-    runSequence("clean:app", 'build:global:copyresources', 'build:prod:index', 'clean:appjs', callback);
+gulp.task("build:prod", function (done) {
+    runSequence("clean:app", 'build:global:copyresources', 'build:prod:index', 'clean:appjs', 'stylesheet:bundle', done);
 });
 
 /*
@@ -411,39 +437,39 @@ gulp.task("build:prod", function (callback) {
 /*
     Configure the environment
 */
-gulp.task("build:configure:dev", function (callback) {
+gulp.task("build:configure:dev", function (done) {
     showMessage.Success('Configuruing environment');
     setEnvironment(false);
-    callback();
+    done();
 });
 
 /*
     copy the libs used by angular
 */
-gulp.task("build:dev:copylibs", function (callback) {
+gulp.task("build:dev:copylibs", function (done) {
     gulp.src(libs).pipe(gulp.dest(ASSETS_BUILD_DIR + '/js')).on("end", function () {
         showMessage.Success("Libs copied");
-        callback();
+        done();
     });
 });
 
 /*
     edit systemjs and copy it
  */
-gulp.task("build:dev:systemjs", ["clean:index"], function (callback) {
+gulp.task("build:dev:systemjs", ["clean:index"], function (done) {
     gulp.src(['systemjs.config.js'])
         .pipe(replace('dist/app', '.'))
         .pipe(gulp.dest(APP_BUILD_DIR + '/'))
         .on("end", function () {
             showMessage.Success("systemjs created and configured");
-            callback();
+            done();
         });
 });
 
 /* 
     prepare the index for the developpement adding libs and systemjs into the index
 */
-gulp.task("build:dev:index", ["build:dev:copylibs", "build:dev:systemjs", "build:global:compile:app"], function (callback) {
+gulp.task("build:dev:index", ["build:dev:copylibs", "build:dev:systemjs", "build:global:compile:app"], function (done) {
     gulp.src([RES_SRC_DIR + '/html/index.html'])
         .pipe(replace('<!-- build:vendors -->', '\
          <script src="assets/js/shim.min.js"></script>\
@@ -460,7 +486,7 @@ gulp.task("build:dev:index", ["build:dev:copylibs", "build:dev:systemjs", "build
         .pipe(gulp.dest(APP_BUILD_DIR + '/'))
         .on("end", function () {
             showMessage.Success("Index generated");
-            callback();
+            done();
         });
 });
 
@@ -468,8 +494,8 @@ gulp.task("build:dev:index", ["build:dev:copylibs", "build:dev:systemjs", "build
 /* 
     Generating application for developpement
 */
-gulp.task("build:dev", function (callback) {
-    runSequence("clean:app", 'build:global:copyresources', 'build:dev:index', 'build:configure:dev', callback);
+gulp.task("build:dev", function (done) {
+    runSequence("clean:app", 'build:global:copyresources', 'build:dev:index', 'build:configure:dev', done);
 });
 
 /*
@@ -479,23 +505,23 @@ gulp.task("build:dev", function (callback) {
 /* 
     Reloading the server
 */
-gulp.task("reloadserver", function (callback) {
+gulp.task("reloadserver", function (done) {
     browserSync.reload();
-    callback();
+    done();
 });
 
 /*
     Compile Application and reload Server
 */
-gulp.task("compileandreload", function (callback) {
-    runSequence("build:global:compile:app:nostop", "reloadserver", callback);
+gulp.task("compileandreload", function (done) {
+    runSequence("build:global:compile:app:nostop", "reloadserver", done);
 });
 
 /*
    Copy resources and reload server 
 */
-gulp.task("copyresandreload", function (callback) {
-    runSequence("build:global:copyresources", "reloadserver", callback);
+gulp.task("copyresandreload", function (done) {
+    runSequence("build:global:copyresources", "reloadserver", done);
 });
 
 /*
@@ -527,4 +553,135 @@ gulp.task('serve:simple', function () {
             baseDir: APP_BUILD_DIR + '/'
         }
     });
+});
+
+/*
+    [ Stylesheet tasks ]
+*/
+
+/* 
+    Copy css files to assets
+*/
+gulp.task('stylesheet:css', ['clean:stylesheet'], function (done) {
+    gulp.src(RES_SRC_DIR + '/css/**/*.css')
+        .pipe(gulp.dest(ASSETS_BUILD_DIR + '/css/'))
+        .on('end', function () {
+            showMessage.Success("CSS files copied");
+            done();
+        });
+});
+
+/* 
+    Copy fonts files to assets
+*/
+gulp.task('stylesheet:fonts', ['clean:stylesheet'], function (done) {
+    gulp.src(RES_SRC_DIR + '/fonts/**/*')
+        .pipe(gulp.dest(ASSETS_BUILD_DIR + '/fonts/'))
+        .on('end', function () {
+            showMessage.Success("fonts files copied");
+            done();
+        });
+});
+
+/*
+    function that compile less and sass files
+*/
+function compileCSS(compiler, name, type, done) {
+    showMessage.Warning('Compiling ' + name + ' files');
+    gulp.src(
+        [
+            RES_SRC_DIR + '/css/**/*.' + type,
+            '!' + RES_SRC_DIR + '/css/**/_*.' + type
+        ])
+        .pipe(sourcemaps.init())
+        .pipe(compiler())
+        .on('error', function (err) {
+            showMessage.Error('[' + name + '-compiler] error : ' + err.message);
+            done(err);
+        })
+        .pipe(autoprefixer({ browsers: BROWSER_LIST }))
+        .pipe(sourcemaps.write('./maps'))
+        .pipe(gulp.dest(CSS_ASSETS_BUILD_DIR))
+        .on('end', function () {
+            showMessage.Success(name + ' compiled to css');
+            done();
+        });
+}
+
+/*
+    function that compile less files
+*/
+function compileLESS(done) {
+    compileCSS(less, 'less', 'less', done);
+}
+
+/*
+    function that compile sass files
+*/
+function compileSASS(done) {
+    compileCSS(sass, 'sass', 'scss', done);
+}
+
+/*
+    Generate css files from less
+*/
+gulp.task('stylesheet:less', ['clean:stylesheet'], function (done) {
+    compileLESS(done);
+});
+
+/*
+   Generate css files from sass
+ */
+gulp.task('stylesheet:sass', ['clean:stylesheet'], function (done) {
+    compileSASS(done);
+});
+
+/*
+    watch and compile less files
+*/
+gulp.task("stylesheet:less:watch", ["stylesheet:less"], function () {
+    gulp.watch(RES_SRC_DIR + '/css/**/*.less', ["stylesheet:less"]);
+});
+
+/*
+    watch and compile sass files
+*/
+gulp.task("stylesheet:sass:watch", ["stylesheet:sass"], function () {
+    gulp.watch(RES_SRC_DIR + '/css/**/*.scss', ["stylesheet:sass"]);
+});
+
+/**
+ *  Bundle css
+ */
+gulp.task('stylesheet:bundle', function (done) {
+    showMessage.Warning('Generating CSS Bundle');
+    gulp.src(CSS_ASSETS_BUILD_DIR + '/**/*.css')
+        .pipe(concat('bundle.css'))
+        .on('error', function (err) {
+            showMessage.Error('[ CSS-bundle ] concat error : ' + err.message);
+            done(err);
+        })
+        .pipe(autoprefixer({ browsers: BROWSER_LIST }))
+        .on('error', function (err) {
+            showMessage.Error('[ CSS-bundle ] autoprefixer error : ' + err.message);
+            done(err);
+        })
+        .pipe(csso())
+        .on('error', function (err) {
+            showMessage.Error('[ CSS-bundle ] csso error : ' + err.message);
+            done(err);
+        })
+        .pipe(gulp.dest(CSS_ASSETS_BUILD_DIR))
+        .on('end', function () {
+            showMessage.Success('Css files bundled to bundle.css');
+            del.sync([CSS_ASSETS_BUILD_DIR + '/**', '!' + CSS_ASSETS_BUILD_DIR, '!' + CSS_ASSETS_BUILD_DIR + '/bundle.css']);
+            done();
+        });
+});
+
+/**
+ * Inject into browser
+ */
+gulp.task('stylesheet:inject', function (done) {
+
 });
