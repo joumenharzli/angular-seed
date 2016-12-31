@@ -31,6 +31,8 @@ const autoprefixer = require('gulp-autoprefixer');
 const csso = require('gulp-csso');
 const inject = require('gulp-inject');
 const htmlmin = require('gulp-htmlmin');
+const scsslint = require('gulp-sass-lint');
+const lesslint = require('gulp-lesshint');
 
 /*
     Configuration
@@ -620,6 +622,24 @@ function compileCSS(compiler, name, type, done) {
 }
 
 /*
+    Lint sass
+*/
+gulp.task('stylesheet:sass:lint', function () {
+    return gulp.src(RES_SRC_DIR + '/css/**/*.scss')
+        .pipe(scsslint())
+        .pipe(scsslint.format());
+});
+
+/*
+    Lint less
+*/
+gulp.task('stylesheet:less:lint', function () {
+    return gulp.src(RES_SRC_DIR + '/css/**/*.less')
+        .pipe(lesslint())
+        .pipe(lesslint.reporter())
+});
+
+/*
     function that compile less files
 */
 function compileLESS(done) {
@@ -650,15 +670,15 @@ gulp.task('stylesheet:sass', ['clean:stylesheet'], function (done) {
 /*
     watch and compile less files
 */
-gulp.task("stylesheet:less:watch", ["stylesheet:less"], function () {
-    gulp.watch(RES_SRC_DIR + '/css/**/*.less', ["stylesheet:less"]);
+gulp.task("stylesheet:less:watch", ["stylesheet:less", 'stylesheet:less:lint'], function () {
+    gulp.watch(RES_SRC_DIR + '/css/**/*.less', ["stylesheet:less", 'stylesheet:less:lint']);
 });
 
 /*
     watch and compile sass files
 */
-gulp.task("stylesheet:sass:watch", ["stylesheet:sass"], function () {
-    gulp.watch(RES_SRC_DIR + '/css/**/*.scss', ["stylesheet:sass"]);
+gulp.task("stylesheet:sass:watch", ["stylesheet:sass", 'stylesheet:sass:lint'], function () {
+    gulp.watch(RES_SRC_DIR + '/css/**/*.scss', ["stylesheet:sass", 'stylesheet:sass:lint']);
 });
 
 /**

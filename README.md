@@ -29,7 +29,7 @@ npm run serve
 - SystemJS for module loading
 - Can be used in Production and Developing mode
 - Included library: RxJS, ngrx
-- Supports less and sass including autoprefixer
+- Supports less and sass including autoprefixer and linting
 - Automatic injection and minification of CSS & JS files
 - You can test with karma and jasmin and generate blank spec
 - Gulp for tasks running
