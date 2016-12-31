@@ -36,10 +36,9 @@ npm run serve
 
 # Comming Soon
 
-- support for less and sass
-- optimized building with rollup and aot
-- including ImmutableJS and lodash
+- including lodash
 - protactor
+- optimized building with rollup and aot
 - version control
 - change log generator 
 
