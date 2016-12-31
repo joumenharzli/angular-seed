@@ -29,6 +29,7 @@ const less = require('gulp-less');
 const sass = require('gulp-sass');
 const autoprefixer = require('gulp-autoprefixer');
 const csso = require('gulp-csso');
+const inject = require('gulp-inject');
 
 /*
     Configuration
@@ -427,7 +428,7 @@ gulp.task("build:prod:index", ["build:prod:mainjs", "build:prod:vendors", "clean
     Generating application for production
 */
 gulp.task("build:prod", function (done) {
-    runSequence("clean:app", 'build:global:copyresources', 'build:prod:index', 'clean:appjs', 'stylesheet:bundle', done);
+    runSequence("clean:app", 'build:global:copyresources', 'build:prod:index', 'clean:appjs', 'stylesheet:bundle', 'stylesheet:inject', done);
 });
 
 /*
@@ -441,16 +442,6 @@ gulp.task("build:configure:dev", function (done) {
     showMessage.Success('Configuruing environment');
     setEnvironment(false);
     done();
-});
-
-/*
-    copy the libs used by angular
-*/
-gulp.task("build:dev:copylibs", function (done) {
-    gulp.src(libs).pipe(gulp.dest(ASSETS_BUILD_DIR + '/js')).on("end", function () {
-        showMessage.Success("Libs copied");
-        done();
-    });
 });
 
 /*
@@ -469,13 +460,13 @@ gulp.task("build:dev:systemjs", ["clean:index"], function (done) {
 /* 
     prepare the index for the developpement adding libs and systemjs into the index
 */
-gulp.task("build:dev:index", ["build:dev:copylibs", "build:dev:systemjs", "build:global:compile:app"], function (done) {
+gulp.task("build:dev:index", ["build:dev:systemjs", "build:global:compile:app"], function (done) {
     gulp.src([RES_SRC_DIR + '/html/index.html'])
         .pipe(replace('<!-- build:vendors -->', '\
-         <script src="assets/js/shim.min.js"></script>\
-            <script src="assets/js/zone.js" ></script >\
-            <script src="assets/js/Reflect.js"></script>\
-            <script src="assets/js/system.src.js"></script>\
+         <script src="node_modules/core-js/client/shim.min.js"></script>\
+            <script src="node_modules/zone.js/dist/zone.js" ></script >\
+            <script src="node_modules/reflect-metadata/Reflect.js"></script>\
+            <script src="node_modules/systemjs/dist/system.src.js"></script>\
         '))
         .pipe(replace('<!-- build:app -->', ''))
         .pipe(replace('<!-- build:systemjs -->', '  <script>\
@@ -495,7 +486,7 @@ gulp.task("build:dev:index", ["build:dev:copylibs", "build:dev:systemjs", "build
     Generating application for developpement
 */
 gulp.task("build:dev", function (done) {
-    runSequence("clean:app", 'build:global:copyresources', 'build:dev:index', 'build:configure:dev', done);
+    runSequence("clean:app", 'build:global:copyresources', 'build:dev:index', 'build:configure:dev', 'stylesheet:inject', done);
 });
 
 /*
@@ -656,7 +647,7 @@ gulp.task("stylesheet:sass:watch", ["stylesheet:sass"], function () {
 gulp.task('stylesheet:bundle', function (done) {
     showMessage.Warning('Generating CSS Bundle');
     gulp.src(CSS_ASSETS_BUILD_DIR + '/**/*.css')
-        .pipe(concat('bundle.css'))
+        .pipe(concat('bundle.min.css'))
         .on('error', function (err) {
             showMessage.Error('[ CSS-bundle ] concat error : ' + err.message);
             done(err);
@@ -673,15 +664,45 @@ gulp.task('stylesheet:bundle', function (done) {
         })
         .pipe(gulp.dest(CSS_ASSETS_BUILD_DIR))
         .on('end', function () {
-            showMessage.Success('Css files bundled to bundle.css');
-            del.sync([CSS_ASSETS_BUILD_DIR + '/**', '!' + CSS_ASSETS_BUILD_DIR, '!' + CSS_ASSETS_BUILD_DIR + '/bundle.css']);
+            showMessage.Success('Css files bundled to bundle.min.css');
+            del.sync([CSS_ASSETS_BUILD_DIR + '/**', '!' + CSS_ASSETS_BUILD_DIR, '!' + CSS_ASSETS_BUILD_DIR + '/bundle.min.css']);
             done();
         });
+});
+
+function injectIntoIndex(src, ext, done) {
+    showMessage.Warning('Injecting ' + ext + ' into index');
+    const target = gulp.src(APP_BUILD_DIR + '/index.html');
+    const sources = gulp.src(src, { read: false });
+    target.pipe(inject(sources, { relative: true, starttag: '<!-- inject:' + ext + ' -->' }))
+        .on('error', function (err) {
+            showMessage.Error('[ Injecting ' + ext + ' ] error : ' + err.message);
+            done(err);
+        })
+        .pipe(gulp.dest(APP_BUILD_DIR))
+        .on('end', function () {
+            showMessage.Success('Injecting ' + ext + ' into index done');
+            done();
+        });
+}
+
+gulp.task('stylesheet:inject:css', function (done) {
+    injectIntoIndex([
+        CSS_ASSETS_BUILD_DIR + '/**/*.css'
+    ], 'css', done);
+});
+
+gulp.task('stylesheet:inject:js', function (done) {
+    injectIntoIndex([
+        JS_ASSETS_BUILD_DIR + '/**/*.js',
+        '!' + JS_ASSETS_BUILD_DIR + '/app.min.js',
+        '!' + JS_ASSETS_BUILD_DIR + '/vendors.min.js',
+    ], 'js', done);
 });
 
 /**
  * Inject into browser
  */
 gulp.task('stylesheet:inject', function (done) {
-
+    runSequence('stylesheet:inject:css', 'stylesheet:inject:js', done);
 });
