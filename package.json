@@ -17,7 +17,7 @@
     "test": "gulp test:karma:once",
     "test:reload": "gulp test:karma",
     "build:dev": "gulp build:dev",
-    "build:prod": "build:prod",
+    "build:prod": "gulp build:prod",
     "serve": "gulp serve",
     "stylesheet:less": "gulp stylesheet:less:watch",
     "stylesheet:sass": "gulp stylesheet:sass:watch"
@@ -50,6 +50,7 @@
     "gulp-autoprefixer": "^3.1.1",
     "gulp-concat": "^2.6.1",
     "gulp-csso": "^2.0.0",
+    "gulp-htmlmin": "^3.0.0",
     "gulp-inject": "^4.2.0",
     "gulp-less": "^3.3.0",
     "gulp-msg": "^0.0.1",

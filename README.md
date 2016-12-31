@@ -30,10 +30,11 @@ npm run serve
 - Can be used in Production and Developing mode
 - Included library: RxJS, ngrx
 - Supports less and sass including autoprefixer
-- Automatic injection of CSS & JS files
+- Automatic injection and minification of CSS & JS files
 - You can test with karma and jasmin and generate blank spec
 - Gulp for tasks running
 - Yarn for dependency management
+- Html minification
 
 # Comming Soon
 

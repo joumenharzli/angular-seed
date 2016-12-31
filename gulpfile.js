@@ -30,6 +30,7 @@ const sass = require('gulp-sass');
 const autoprefixer = require('gulp-autoprefixer');
 const csso = require('gulp-csso');
 const inject = require('gulp-inject');
+const htmlmin = require('gulp-htmlmin');
 
 /*
     Configuration
@@ -423,12 +424,31 @@ gulp.task("build:prod:index", ["build:prod:mainjs", "build:prod:vendors", "clean
         });
 });
 
-
+/*
+    Index minification
+*/
+gulp.task('build:prod:index:minify', function (done) {
+    showMessage.Warning('Html minification');
+    gulp.src(APP_BUILD_DIR + '/index.html')
+        .pipe(htmlmin({
+            collapseWhitespace: true,
+            minifyJS: true,
+            removeComments: true,
+            /* Used to impove gzip compression */
+            sortAttributes: true,
+            sortClassName: true
+        }))
+        .pipe(gulp.dest(APP_BUILD_DIR + '/'))
+        .on('end', function () {
+            showMessage.Success("Html minification done");
+            done();
+        });
+});
 /* 
     Generating application for production
 */
 gulp.task("build:prod", function (done) {
-    runSequence("clean:app", 'build:global:copyresources', 'build:prod:index', 'clean:appjs', 'stylesheet:bundle', 'stylesheet:inject', done);
+    runSequence("clean:app", 'build:global:copyresources', 'build:prod:index', 'clean:appjs', 'stylesheet:bundle', 'stylesheet:inject', 'build:prod:index:minify', done);
 });
 
 /*
@@ -670,6 +690,9 @@ gulp.task('stylesheet:bundle', function (done) {
         });
 });
 
+/*
+    function to inject files into index
+*/
 function injectIntoIndex(src, ext, done) {
     showMessage.Warning('Injecting ' + ext + ' into index');
     const target = gulp.src(APP_BUILD_DIR + '/index.html');
@@ -686,12 +709,18 @@ function injectIntoIndex(src, ext, done) {
         });
 }
 
+/*
+    injecting css files
+*/
 gulp.task('stylesheet:inject:css', function (done) {
     injectIntoIndex([
         CSS_ASSETS_BUILD_DIR + '/**/*.css'
     ], 'css', done);
 });
 
+/*
+    injecting js files
+*/
 gulp.task('stylesheet:inject:js', function (done) {
     injectIntoIndex([
         JS_ASSETS_BUILD_DIR + '/**/*.js',
@@ -701,8 +730,9 @@ gulp.task('stylesheet:inject:js', function (done) {
 });
 
 /**
- * Inject into browser
+ * Inject css & js files into browser
  */
 gulp.task('stylesheet:inject', function (done) {
     runSequence('stylesheet:inject:css', 'stylesheet:inject:js', done);
 });
+
