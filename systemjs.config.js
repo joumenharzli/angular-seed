@@ -22,6 +22,7 @@ System.config({
     // other libraries
     'reselect': 'npm:reselect/dist/reselect.js',
     'rxjs': 'npm:rxjs',
+    'lodash': 'npm:lodash/lodash.min.js',
     '@ngrx/core': 'npm:@ngrx/core/bundles/core.min.umd.js',
     '@ngrx/store': 'npm:@ngrx/store/bundles/store.min.umd.js',
   },
@@ -32,5 +33,6 @@ System.config({
     '@ngrx/core': { defaultExtension: 'js' },
     '@ngrx/store': { defaultExtension: 'js' },
     'reselect': { defaultExtension: 'js' },
+    'lodash': { defaultExtension: 'js' },
   }
 });

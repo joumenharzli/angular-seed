@@ -60,6 +60,9 @@ module.exports = function (config) {
       { pattern: 'node_modules/@ngrx/**/*.js', included: false, watched: false },
       { pattern: 'node_modules/@ngrx/**/*.js.map', included: false, watched: false },
 
+      // lodash
+      { pattern: 'node_modules/lodash/**/*.js', included: false, watched: false },
+
       // Paths loaded via module imports:
       // Angular itself
       { pattern: 'node_modules/@angular/**/*.js', included: false, watched: false },
@@ -94,7 +97,7 @@ module.exports = function (config) {
     exclude: [
       'dist/test/coverage/**/*'
     ],
-    
+
     preprocessors: {
       'dist/app/**/*.js': ['coverage']
     },

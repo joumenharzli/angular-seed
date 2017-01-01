@@ -1,6 +1,6 @@
 <img src='http://www.hostingpics.net/thumbs/80/51/80/mini_805180logoplug.png' alt='logo'>
 # Angular Plug n Play Seed
-Maven-like seed for angular projects featuring rxjs, ngrx, karma, gulp, yarn and more ready for development and production mode
+Maven-like seed for angular projects featuring rxjs, ngrx, lodash, karma, gulp, yarn and more ready for development and production mode
 
 [![Dependency Status](https://david-dm.org/joumenharzli/angular-seed.svg)](https://david-dm.org/joumenharzli/angular-seed)
 [![devDependency Status](https://david-dm.org/joumenharzli/angular-seed/dev-status.svg)](https://david-dm.org/joumenharzli/angular-seed#info=devDependencies)
@@ -28,7 +28,7 @@ npm run serve
 
 - SystemJS for module loading
 - Can be used in Production and Developing mode
-- Included library: RxJS, ngrx
+- Included library: RxJS, ngrx, lodash
 - Supports less and sass including autoprefixer and linting
 - Automatic injection and minification of CSS & JS files
 - You can test with karma and jasmin and generate blank spec
@@ -38,7 +38,6 @@ npm run serve
 
 # Comming Soon
 
-- including lodash
 - protactor
 - optimized building with rollup and aot
 - version control
@@ -55,10 +54,10 @@ npm run serve
 npm run clean
 
 # compile less files
-npm run stylesheet:less
+npm run compile:less
 
 # compile scss files
-npm run stylesheet:sass
+npm run compile:sass
 
 # compile application
 npm run compile
