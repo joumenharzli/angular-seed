@@ -13,10 +13,23 @@ const gulp = require('gulp'),
     config = require('../../project-config');
 
 /**
- * lint ts files
+ * lint app ts files
  */
 gulp.task('lint:app', function() {
     return gulp.src(config.paths.sources.app + '**/*.ts')
+        .pipe(tslint({
+            formatter: 'prose',
+        }))
+        .pipe(tslint.report({
+            emitError: false,
+        }));
+});
+
+/**
+ * lint app ts files
+ */
+gulp.task('lint:test', function() {
+    return gulp.src(config.paths.sources.test + '**/*.ts')
         .pipe(tslint({
             formatter: 'prose',
         }))

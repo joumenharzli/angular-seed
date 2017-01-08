@@ -1,6 +1,6 @@
 <img src='http://www.hostingpics.net/thumbs/80/51/80/mini_805180logoplug.png' alt='logo'>
 # Angular Plug n Play Seed
-Maven-like seed for angular projects featuring rxjs, ngrx, rollup, lodash, karma, gulp, yarn and more ready for development and production mode
+Maven-like seed for angular projects featuring rxjs, ngrx, systemjs, rollup, lodash, karma, gulp, yarn and more ready for development and production mode
 
 [![Dependency Status](https://david-dm.org/joumenharzli/angular-seed.svg)](https://david-dm.org/joumenharzli/angular-seed)
 [![devDependency Status](https://david-dm.org/joumenharzli/angular-seed/dev-status.svg)](https://david-dm.org/joumenharzli/angular-seed#info=devDependencies)
@@ -70,7 +70,7 @@ npm run compile:test
 npm run test:generatespec
 
 # runing tests ( add :watch for watch mode )
-npm run test
+npm run test:unit
 
 # linting ts files
 npm run lint:app
