@@ -1,6 +1,6 @@
 <img src='http://www.hostingpics.net/thumbs/80/51/80/mini_805180logoplug.png' alt='logo'>
 # Angular Plug n Play Seed
-Maven-like seed for angular projects featuring rxjs, ngrx, lodash, karma, gulp, yarn and more ready for development and production mode
+Maven-like seed for angular projects featuring rxjs, ngrx, rollup, lodash, karma, gulp, yarn and more ready for development and production mode
 
 [![Dependency Status](https://david-dm.org/joumenharzli/angular-seed.svg)](https://david-dm.org/joumenharzli/angular-seed)
 [![devDependency Status](https://david-dm.org/joumenharzli/angular-seed/dev-status.svg)](https://david-dm.org/joumenharzli/angular-seed#info=devDependencies)
@@ -21,11 +21,12 @@ npm install -g yarn
 yarn
 
 # start developing
-npm run serve
+npm run serve:dev
 ```
 
 # Features
 
+- Rollup module bundler
 - SystemJS for module loading
 - Can be used in Production and Developing mode
 - Included library: RxJS, ngrx, lodash
@@ -39,7 +40,7 @@ npm run serve
 # Comming Soon
 
 - protactor
-- optimized building with rollup and aot
+- optimized building with aot
 - version control
 - change log generator 
 
@@ -53,26 +54,32 @@ npm run serve
 # clean dist directory
 npm run clean
 
-# compile less files
+# compile less files ( add :watch for watch mode )
 npm run compile:less
 
-# compile scss files
+# compile scss files ( add :watch for watch mode )
 npm run compile:sass
 
-# compile application
-npm run compile
+# compile application ( add :watch for watch mode )
+npm run compile:app
 
-# compile tests
-npm run test:compile
+# compile tests ( add :watch for watch mode )
+npm run compile:test
 
 # generating blank tests
 npm run test:generatespec
 
-# runing tests
+# runing tests ( add :watch for watch mode )
 npm run test
 
-# linting
-npm run lint
+# linting ts files
+npm run lint:app
+
+# linting less files
+npm run lint:less
+
+# linting sass files
+npm run lint:sass
 
 # runing server
 npm run serve
@@ -80,8 +87,11 @@ npm run serve
 # build for development mode
 npm run build:dev
 
-# build for production mode
+# build for production mode with SystemJS
 npm run build:prod
+
+# build for production mode with Rollup
+npm run build:rollup
 ```
 
 # License

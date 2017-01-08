@@ -3,7 +3,7 @@ import { Store } from '@ngrx/store';
 import { Http } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
-import * as _ from 'lodash';
+import { slice } from 'lodash';
 
 import { AppState } from './app.state';
 
@@ -26,6 +26,6 @@ export class AppComponent {
         console.log(res);
       });
 
-    console.log(_.slice([1, 2, 3, 4], 1, 2));
+    console.log(slice([1, 2, 3, 4], 1, 2));
   }
 }
