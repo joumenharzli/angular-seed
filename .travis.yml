@@ -2,6 +2,8 @@ language: node_js
 node_js: stable
 sudo: false
 
+install: true # travis/yarn bug
+
 branches:
   only: master
 
@@ -20,8 +22,8 @@ after_failure:
   - cat /home/travis/build/joumenharzli/angular-seed/npm-debug.log
 
 # https://docs.travis-ci.com/user/caching/#Caching-directories-(Bundler%2C-dependencies)
-cache:
-  directories: node_modules
+#cache:
+#  directories: node_modules
 
 script:
   - npm run test:unit && npm run build:dev && npm run build:prod && npm run build:rollup
