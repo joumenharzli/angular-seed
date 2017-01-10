@@ -13,9 +13,6 @@ Maven-like seed for angular projects featuring rxjs, ngrx, systemjs, rollup, les
 git clone https://github.com/joumenharzli/angular-seed.git
 cd angular-seed/
 
-# install gulp ( as administrator )
-npm install -g gulp
-
 # install yarn ( as administrator )
 npm install -g yarn
 
