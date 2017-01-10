@@ -61,7 +61,18 @@ function configEnvironment() {
 gulp.task('build:assets',
     ['compile:less', 'compile:sass',
         'compile:copyfonts', 'compile:copycss', 'compile:copyimg', 'compile:copyjs'],
-    function(done) {
+    function (done) {
+        done();
+    }
+);
+
+/**
+ * Build included ressources files in app
+ */
+gulp.task('build:assets:included',
+    ['lint:less:included', 'lint:sass:included',
+        'compile:copycss:included'],
+    function (done) {
         done();
     }
 );
@@ -69,7 +80,7 @@ gulp.task('build:assets',
 /**
  * Prepare index
  */
-gulp.task('build:index', ['clean:index'], function(done) {
+gulp.task('build:index', ['clean:index'], function (done) {
     let vendorsbundle = '';
     let systemjs = '';
     let appbundle = '';
@@ -79,7 +90,7 @@ gulp.task('build:index', ['clean:index'], function(done) {
         systemjs = '';
     } else {
         let libs = config.libs.concat(config.systemjsLibs);
-        libs.forEach(function(lib) {
+        libs.forEach(function (lib) {
             vendorsbundle = vendorsbundle + '<script src="' + lib + '"></script>';
         });
         appbundle = '';
@@ -95,7 +106,7 @@ gulp.task('build:index', ['clean:index'], function(done) {
         .pipe(replace('<!-- build:app -->', appbundle))
         .pipe(replace('<!-- build:systemjs -->', systemjs))
         .pipe(gulp.dest(config.paths.destinations.app))
-        .on('end', function() {
+        .on('end', function () {
             done();
         });
 });
@@ -103,7 +114,7 @@ gulp.task('build:index', ['clean:index'], function(done) {
 /**
  * Index minification
  */
-gulp.task('build:index:minify', function() {
+gulp.task('build:index:minify', function () {
     return gulp.src(config.paths.destinations.app + 'index.html')
         .pipe(htmlmin({
             collapseWhitespace: true,
@@ -119,16 +130,16 @@ gulp.task('build:index:minify', function() {
 /**
  * Bundle css files and minify
  */
-gulp.task('build:cssbundle', function(done) {
+gulp.task('build:cssbundle', function (done) {
     gulp.src(config.paths.destinations.resources.css + '**/*.css')
         .pipe(concat('bundle.min.css'))
         .on('error', errorHandler.fatal)
-        .pipe(autoprefixer({browsers: config.browsersList}))
+        .pipe(autoprefixer({ browsers: config.browsersList }))
         .on('error', errorHandler.fatal)
         .pipe(csso())
         .on('error', errorHandler.fatal)
         .pipe(gulp.dest(config.paths.destinations.resources.css))
-        .on('end', function() {
+        .on('end', function () {
             del.sync([
                 config.paths.destinations.resources.css + '**',
                 '!' + utils.removeSlash(config.paths.destinations.resources.css),
@@ -138,7 +149,7 @@ gulp.task('build:cssbundle', function(done) {
 });
 
 /* Configure the environment */
-gulp.task('build:patchenvironment', function(done) {
+gulp.task('build:patchenvironment', function (done) {
     configEnvironment();
     done();
 });
@@ -146,7 +157,7 @@ gulp.task('build:patchenvironment', function(done) {
 /**
  * Bundle libs into vendors.min.js
  */
-gulp.task('build:vendorsbundle', function(done) {
+gulp.task('build:vendorsbundle', function (done) {
     let libs = config.libs;
     if (buildMethod === buildMethods.rollup) {
         libs = libs.concat(config.extLibs);
@@ -157,7 +168,7 @@ gulp.task('build:vendorsbundle', function(done) {
         .pipe(uglify())
         .on('error', errorHandler.fatal)
         .pipe(gulp.dest(config.paths.destinations.resources.js))
-        .on('end', function() {
+        .on('end', function () {
             done();
         });
 });
@@ -167,11 +178,11 @@ gulp.task('build:vendorsbundle', function(done) {
 */
 function injectIntoIndex(src, ext, done) {
     const target = gulp.src(config.paths.destinations.app + 'index.html');
-    const sources = gulp.src(src, {read: false});
-    target.pipe(inject(sources, {relative: true, starttag: '<!-- inject:' + ext + ' -->'}))
+    const sources = gulp.src(src, { read: false });
+    target.pipe(inject(sources, { relative: true, starttag: '<!-- inject:' + ext + ' -->' }))
         .on('error', errorHandler.fatal)
         .pipe(gulp.dest(config.paths.destinations.app))
-        .on('end', function() {
+        .on('end', function () {
             done();
         });
 }
@@ -179,7 +190,7 @@ function injectIntoIndex(src, ext, done) {
 /**
  * injecting css files
  */
-gulp.task('build:inject:css', function(done) {
+gulp.task('build:inject:css', function (done) {
     injectIntoIndex([
         config.paths.destinations.resources.css + '**/*.css',
     ], 'css', done);
@@ -188,7 +199,7 @@ gulp.task('build:inject:css', function(done) {
 /**
  * injecting js files
  */
-gulp.task('build:inject:js', function(done) {
+gulp.task('build:inject:js', function (done) {
     injectIntoIndex([
         config.paths.destinations.resources.js + '**/*.js',
         '!' + config.paths.destinations.resources.js + 'app.min.js',
@@ -199,14 +210,14 @@ gulp.task('build:inject:js', function(done) {
 /**
  * Inject css & js files into browser
  */
-gulp.task('build:injectassets', function(done) {
+gulp.task('build:injectassets', function (done) {
     runSequence('build:inject:css', 'build:inject:js', done);
 });
 
 /**
  * Prepare to build for production
  */
-gulp.task('build:preprod', function(done) {
+gulp.task('build:preprod', function (done) {
     buildMode = buildModes.prod;
     if (gutil.env.rollup) {
         buildMethod = buildMethods.rollup;
@@ -223,11 +234,11 @@ gulp.task('build:preprod', function(done) {
 /**
  * Compile and bundle files into app.min.js with system js builder
  */
-gulp.task('build:appbundle', ['compile:app'], function(done) {
+gulp.task('build:appbundle', ['compile:app'], function (done) {
     configEnvironment();
     const builder = new sysBuilder('.', 'systemjs.config.js');
-    builder.buildStatic('app', config.paths.destinations.resources.js + 'app.min.js', {minify: true})
-        .then(function() {
+    builder.buildStatic('app', config.paths.destinations.resources.js + 'app.min.js', { minify: true })
+        .then(function () {
             done();
         })
         .catch(errorHandler.fatal);
@@ -236,7 +247,7 @@ gulp.task('build:appbundle', ['compile:app'], function(done) {
 /**
  * Compile and bundle files into app.min.js with rollup
  */
-gulp.task('build:appbundle:rollup', ['compile:app:rollup'], function(done) {
+gulp.task('build:appbundle:rollup', ['compile:app:rollup'], function (done) {
     configEnvironment();
     return rollup.rollup({
         entry: config.paths.destinations.app + 'main.js',
@@ -245,13 +256,13 @@ gulp.task('build:appbundle:rollup', ['compile:app:rollup'], function(done) {
             lodash: '_',
         },
         plugins: [
-            rollupNodeResolve({jsnext: true, module: true}),
+            rollupNodeResolve({ jsnext: true, module: true }),
             rollupCommonjs({
                 include: 'node_modules/rxjs/**',
             }),
             rollupUglify(),
         ],
-    }).then(function(bundle) {
+    }).then(function (bundle) {
         bundle.write({
             dest: config.paths.destinations.resources.js + 'app.min.js',
             sourceMap: false,
@@ -266,15 +277,15 @@ gulp.task('build:appbundle:rollup', ['compile:app:rollup'], function(done) {
 /**
  * Build in production with SystemJs
  */
-gulp.task('build:prod', ['build:preprod'], function(done) {
+gulp.task('build:prod', ['build:preprod'], function (done) {
     if (buildMethod === buildMethods.rollup) {
-        runSequence('build:appbundle:rollup', 'clean:appjs', function() {
+        runSequence('build:appbundle:rollup', 'clean:appjs', function () {
             done();
         });
     } else if (buildMethod === buildMethods.aot) {
         done(); // Not supported yet
     } else {
-        runSequence('build:appbundle', 'clean:appjs', function() {
+        runSequence('build:appbundle', 'clean:appjs', function () {
             done();
         });
     }
@@ -283,11 +294,11 @@ gulp.task('build:prod', ['build:preprod'], function(done) {
 /**
  * edit systemjs and copy it
  */
-gulp.task('build:copysystemjs', function(done) {
+gulp.task('build:copysystemjs', function (done) {
     gulp.src(['systemjs.config.js'])
         .pipe(replace('dist/app', '.'))
         .pipe(gulp.dest(config.paths.destinations.app))
-        .on('end', function() {
+        .on('end', function () {
             done();
         });
 });
@@ -296,7 +307,7 @@ gulp.task('build:copysystemjs', function(done) {
 /**
  * build for developpement mode
  */
-gulp.task('build:dev', function(done) {
+gulp.task('build:dev', function (done) {
     buildMode = buildModes.dev;
     runSequence('clean:app', 'build:assets', 'build:index',
         'build:injectassets',

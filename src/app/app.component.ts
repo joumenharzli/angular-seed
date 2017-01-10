@@ -10,6 +10,7 @@ import { AppState } from './app.state';
 @Component({
   selector: 'app-cookapp',
   template: `<h1>Hello {{name}}</h1>`,
+  styleUrls: ['app.component.scss']
 })
 export class AppComponent {
   name = 'Angular';

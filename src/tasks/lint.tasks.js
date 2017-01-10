@@ -15,7 +15,7 @@ const gulp = require('gulp'),
 /**
  * lint app ts files
  */
-gulp.task('lint:app', function() {
+gulp.task('lint:app', function () {
     return gulp.src(config.paths.sources.app + '**/*.ts')
         .pipe(tslint({
             formatter: 'prose',
@@ -28,7 +28,7 @@ gulp.task('lint:app', function() {
 /**
  * lint app ts files
  */
-gulp.task('lint:test', function() {
+gulp.task('lint:test', function () {
     return gulp.src(config.paths.sources.test + '**/*.ts')
         .pipe(tslint({
             formatter: 'prose',
@@ -41,7 +41,7 @@ gulp.task('lint:test', function() {
 /**
  * lint sass files
  */
-gulp.task('lint:sass', function() {
+gulp.task('lint:sass', function () {
     return gulp.src(config.paths.sources.resources.css + '**/*.scss')
         .pipe(scsslint())
         .pipe(scsslint.format());
@@ -50,8 +50,26 @@ gulp.task('lint:sass', function() {
 /**
  * lint less files
  */
-gulp.task('lint:less', function() {
+gulp.task('lint:less', function () {
     return gulp.src(config.paths.sources.resources.css + '**/*.less')
+        .pipe(lesslint())
+        .pipe(lesslint.reporter());
+});
+
+/**
+ * lint included sass files in app
+ */
+gulp.task('lint:sass:included', ['compile:sass:included'], function () {
+    return gulp.src(config.paths.sources.app + '**/*.scss')
+        .pipe(scsslint())
+        .pipe(scsslint.format());
+});
+
+/**
+ * lint included less files in app
+ */
+gulp.task('lint:less:included', ['compile:less:included'], function () {
+    return gulp.src(config.paths.sources.app + '**/*.less')
         .pipe(lesslint())
         .pipe(lesslint.reporter());
 });
