@@ -880,7 +880,7 @@ codelyzer@^2.0.0-beta.4:
     source-map "^0.5.6"
     sprintf-js "^1.0.3"
 
-colors@1.1.2, colors@^1.1.0, colors@^1.1.2:
+colors@^1.1.0, colors@^1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/colors/-/colors-1.1.2.tgz#168a4701756b6a7f51a12ce0c97bfa28c084ed63"
 
@@ -2862,12 +2862,6 @@ istextorbinary@1.0.2:
 jasmine-core@^2.5.2:
   version "2.5.2"
   resolved "https://registry.yarnpkg.com/jasmine-core/-/jasmine-core-2.5.2.tgz#6f61bd79061e27f43e6f9355e44b3c6cab6ff297"
-
-jasmine-spec-reporter@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/jasmine-spec-reporter/-/jasmine-spec-reporter-3.1.0.tgz#29c74a51d25f7ca46a635d18925ba431a7be840d"
-  dependencies:
-    colors "1.1.2"
 
 jodid25519@^1.0.0:
   version "1.0.2"
