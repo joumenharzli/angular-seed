@@ -27,7 +27,6 @@ module.exports = function (config) {
     },
 
     customLaunchers: {
-      // From the CLI. Not used here but interesting
       // chrome setup for travis CI using chromium
       Chrome_travis_ci: {
         base: 'Chrome',
@@ -115,4 +114,13 @@ module.exports = function (config) {
     browsers: ['Chrome'],
     singleRun: false
   })
+
+  /**
+   * if travis detected 
+   */
+  if (process.env.TRAVIS) {
+    config.browsers = ['Chrome_travis_ci'];
+    config.singleRun = true;
+    config.browserNoActivityTimeout = 90000;
+  }
 }
