@@ -2,6 +2,7 @@
 # Angular Plug n Play Seed
 Maven-like seed for angular projects featuring rxjs, ngrx, systemjs, rollup, less, sass, lodash, karma, gulp, yarn and more ready for development and production mode
 
+[![Build Status](https://travis-ci.org/joumenharzli/angular-seed.svg?branch=master)](https://travis-ci.org/joumenharzli/angular-seed)
 [![Dependency Status](https://david-dm.org/joumenharzli/angular-seed.svg)](https://david-dm.org/joumenharzli/angular-seed)
 [![devDependency Status](https://david-dm.org/joumenharzli/angular-seed/dev-status.svg)](https://david-dm.org/joumenharzli/angular-seed#info=devDependencies)
 

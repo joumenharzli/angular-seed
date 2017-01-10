@@ -23,8 +23,8 @@
     "test:unit": "gulp test:unit",
     "test:unit:watch": "gulp test:unit:watch",
     "build:dev": "gulp serve:dev",
-    "build:prod": "gulp build:prod && gulp serve",
-    "build:rollup": "gulp build:prod --rollup && gulp serve",
+    "build:prod": "gulp build:prod",
+    "build:rollup": "gulp build:prod --rollup",
     "serve": "gulp serve",
     "serve:dev": "gulp serve:dev"
   },
