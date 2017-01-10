@@ -104,8 +104,9 @@ module.exports = function (config) {
 
     /* needed by remap istanbul */
     coverageReporter: {
-      type: 'html',
-      dir: 'dist/test/coverage/notremapped'
+      type: 'json', 
+      file: 'coverage-report.json',
+      dir: 'dist/test/coverage'
     },
 
     remapIstanbulReporter: {
