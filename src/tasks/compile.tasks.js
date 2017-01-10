@@ -8,7 +8,7 @@
 
 const gulp = require('gulp'),
     gutil = require('gulp-util'),
-    csso = require('gulp-csso'),
+    gcsso = require('gulp-csso'),
     tsc = require('gulp-typescript'),
     sourcemaps = require('gulp-sourcemaps'),
     less = require('gulp-less'),
@@ -16,6 +16,7 @@ const gulp = require('gulp'),
     through = require('through2'),
     fs = require('fs'),
     path = require('path'),
+    csso = require('csso'),
     utils = require('./utils'),
     errorHandler = require('./errorHandler'),
     autoprefixer = require('gulp-autoprefixer'),
@@ -70,9 +71,9 @@ function integrateCSS(file, enc, cb) {
             elements.forEach((styleFileName) => {
                 /* read css contents */
                 let styleFilePath = path.resolve(path.dirname(file.path), styleFileName);
-                console.log(styleFilePath);
                 let styleFileData = fs.readFileSync(styleFilePath, 'utf8').toString();
-                elementsData = elementsData.concat('\'', styleFileData, '\',');
+                let compressedCss = csso.minify(styleFileData).css;
+                elementsData = elementsData.concat('\'', compressedCss, '\',');
             });
 
             /* set the new content to the file */
@@ -177,7 +178,7 @@ function compileStylestoCSS(compiler, source, destination, extension, minify, do
         .pipe(compiler())
         .on('error', watchMode ? errorHandler.warning : errorHandler.fatal)
         .pipe(autoprefixer({ browsers: config.browsersList }))
-        .pipe(minify ? csso() : gutil.noop())
+        .pipe(minify ? gcsso() : gutil.noop())
         .pipe(minify ? gutil.noop() : sourcemaps.write('./maps'))
         .pipe(gulp.dest(destination))
         .on('end', function () {

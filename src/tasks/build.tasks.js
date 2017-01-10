@@ -71,7 +71,7 @@ gulp.task('build:assets',
  */
 gulp.task('build:assets:included',
     ['lint:less:included', 'lint:sass:included',
-        'compile:copycss:included'],
+        'lint:css:included'],
     function (done) {
         done();
     }

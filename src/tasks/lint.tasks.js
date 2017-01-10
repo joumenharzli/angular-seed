@@ -10,6 +10,7 @@ const gulp = require('gulp'),
     tslint = require('gulp-tslint'),
     scsslint = require('gulp-sass-lint'),
     lesslint = require('gulp-lesshint'),
+    csslint = require('gulp-csslint'),
     config = require('../../project-config');
 
 /**
@@ -72,4 +73,27 @@ gulp.task('lint:less:included', ['compile:less:included'], function () {
     return gulp.src(config.paths.sources.app + '**/*.less')
         .pipe(lesslint())
         .pipe(lesslint.reporter());
+});
+
+/**
+ * lint css files
+ */
+function lintCSS(sources, done) {
+    return gulp.src(sources)
+        .pipe(csslint())
+        .pipe(csslint.formatter())
+}
+
+/**
+ * lint css files in source res directory
+ */
+gulp.task('lint:css', ['compile:copycss'], function () {
+    return lintCSS(config.paths.sources.resources.css + '**/*.css');
+});
+
+/**
+ * lint css files in source res directory
+ */
+gulp.task('lint:css:included', ['compile:copycss:included'], function () {
+    return lintCSS(config.paths.sources.app + '**/*.css');
 });

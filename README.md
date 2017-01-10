@@ -74,14 +74,20 @@ npm run test:generatespec
 # runing tests ( add :watch for watch mode )
 npm run test:unit
 
-# linting ts files
+# linting app ts files
 npm run lint:app
+
+# linting test ts files
+npm run lint:test
 
 # linting less files
 npm run lint:less
 
 # linting sass files
 npm run lint:sass
+
+# linting css files
+npm run lint:css
 
 # runing server
 npm run serve
