@@ -22,7 +22,7 @@
     "compile:test:watch": "gulp compile:test:watch",
     "test:unit": "gulp test:unit",
     "test:unit:watch": "gulp test:unit:watch",
-    "build:dev": "gulp serve:dev",
+    "build:dev": "gulp build:dev",
     "build:prod": "gulp build:prod",
     "build:rollup": "gulp build:prod --rollup",
     "serve": "gulp serve",
