@@ -13,6 +13,7 @@ const gulp = require('gulp'),
     sourcemaps = require('gulp-sourcemaps'),
     less = require('gulp-less'),
     sass = require('gulp-sass'),
+    tslint = require('gulp-tslint'),
     through = require('through2'),
     fs = require('fs'),
     path = require('path'),
@@ -34,6 +35,12 @@ let watchMode = false;
 function compileTsFiles(filesSrc, filesDest, configFile, done) {
     const tsProject = tsc.createProject(configFile);
     gulp.src(filesSrc)
+        .pipe(tslint({
+            formatter: 'prose',
+        }))
+        .pipe(tslint.report({
+            emitError: false,
+        }))
         .pipe(sourcemaps.init())
         .pipe(tsProject()).js
         .on('error', watchMode ? errorHandler.warning : errorHandler.fatal)

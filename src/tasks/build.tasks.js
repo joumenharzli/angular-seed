@@ -59,8 +59,8 @@ function configEnvironment() {
  * Build ressources files and copy them into assets directory
  */
 gulp.task('build:assets',
-    ['compile:less', 'compile:sass',
-        'compile:copyfonts', 'compile:copycss', 'compile:copyimg', 'compile:copyjs'],
+    ['lint:less', 'lint:sass',
+        'compile:copyfonts', 'lint:css', 'compile:copyimg', 'compile:copyjs'],
     function (done) {
         done();
     }
