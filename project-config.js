@@ -10,7 +10,8 @@
  * Global configuration
  */
 const project = {
-    srvPort: 8888
+    srvPort: 8888,
+    srvCoveragePort: 7777
 };
 
 /**
@@ -39,7 +40,7 @@ const paths = {
             css: basePaths.resources + 'css/',
         },
         tasks: basePaths.src + 'tasks/',
-        test: basePaths.src +'test/'
+        test: basePaths.src + 'test/'
     },
     destinations: {
         destbase: basePaths.dest,
@@ -51,7 +52,8 @@ const paths = {
             fonts: basePaths.assets + 'fonts/',
             css: basePaths.assets + 'css/',
         },
-        test: basePaths.dest +'test/'
+        test: basePaths.dest + 'test/',
+        coverage: basePaths.dest + 'test/coverage'
     }
 };
 

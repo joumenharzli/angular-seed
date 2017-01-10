@@ -11,6 +11,7 @@ const gulp = require('gulp'),
     fs = require('fs'),
     path = require('path'),
     server = require('karma').Server,
+    browserSync = require('browser-sync').create(),
     config = require('../../project-config');
 
 /**
@@ -39,8 +40,8 @@ function launchKarma(single, done) {
 /*
     Generate Specs
 */
-gulp.task('test:generatespec', function() {
-    recursive(config.paths.sources.app, function(err, files) {
+gulp.task('test:generatespec', function () {
+    recursive(config.paths.sources.app, function (err, files) {
         files.forEach((file) => {
             if (
                 file.indexOf('component') > -1 ||
@@ -66,13 +67,26 @@ gulp.task('test:generatespec', function() {
 /**
  * Execute Karma
  */
-gulp.task('test:unit', ['compile:app', 'compile:test'], function(done) {
+gulp.task('test:unit', ['compile:app', 'compile:test'], function (done) {
     launchKarma(true, done);
 });
 
 /**
  * Execute Karma and watch file changes
  */
-gulp.task('test:unit:watch', ['compile:app', 'compile:test'], function(done) {
+gulp.task('test:unit:watch', ['compile:app', 'compile:test'], function (done) {
     launchKarma(false, done);
+});
+
+/**
+ * launch server that expose coverage report
+ */
+gulp.task('test:coverage', ['test:unit'], function () {
+    browserSync.init({
+        port: config.project.srvCoveragePort,
+        server: {
+            baseDir: config.paths.destinations.coverage,
+            index: 'index.html',
+        },
+    });
 });

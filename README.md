@@ -33,6 +33,7 @@ npm run serve:dev
 - Supports styleUrls ( including less/sass/css into ts files )
 - Automatic injection and minification of CSS & JS files
 - You can test with karma and jasmin and generate blank spec
+- Test coverage ( remapped to TS )
 - Gulp for tasks running
 - Yarn for dependency management
 - Html minification
@@ -71,6 +72,9 @@ npm run test:generatespec
 
 # runing tests ( add :watch for watch mode )
 npm run test:unit
+
+# test coverage
+npm run test:coverage
 
 # linting app ts files
 npm run lint:app

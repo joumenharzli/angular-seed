@@ -18,7 +18,7 @@ module.exports = function (config) {
       require('karma-mocha-reporter'),
       require('karma-jasmine'),
       require('karma-chrome-launcher'),
-      require('karma-jasmine-html-reporter')
+      require('karma-remap-istanbul')
     ],
 
     client: {
@@ -100,11 +100,18 @@ module.exports = function (config) {
       'dist/app/**/*.js': ['coverage']
     },
 
-    reporters: ['mocha', 'kjhtml', 'coverage'],
+    reporters: ['mocha', 'coverage', 'karma-remap-istanbul'],
 
+    /* needed by remap istanbul */
     coverageReporter: {
       type: 'html',
-      dir: 'dist/test/coverage'
+      dir: 'dist/test/coverage/notremapped'
+    },
+
+    remapIstanbulReporter: {
+      reports: {
+        html: 'dist/test/coverage'
+      }
     },
 
     port: 9876,
