@@ -2,7 +2,7 @@
 
 const pconfig = require('./project-config');
 
-config = {
+const config = {
 
   /*The baseUrl is the URL that webdriver will visit*/
   baseUrl: 'http://localhost:' + pconfig.project.srvPort,
@@ -46,4 +46,4 @@ if (process.env.TRAVIS) {
   };
 }
 
-exports.config = config
+exports.config = config;
