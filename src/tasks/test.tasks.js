@@ -100,6 +100,9 @@ function executeShell(cmd, done) {
     exec(cmd, function (err, stdout, stderr) {
         console.log(stdout);
         console.log(stderr);
+        if ( err || stderr){
+            process.exit(1);
+        }
         done(err);
     });
 }
