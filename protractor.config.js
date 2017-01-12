@@ -38,7 +38,11 @@ const config = {
 /* Capabilities to be passed to the webdriver instance.*/
 if (process.env.TRAVIS) {
   config.capabilities = {
-    browserName: 'firefox'
+    browserName: 'chrome',
+    chromeOptions: {
+      'args': ['--no-sandbox'],
+      'binary': process.env.CHROME_BIN,
+    }
   };
 } else {
   config.capabilities = {
