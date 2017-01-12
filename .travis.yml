@@ -22,8 +22,8 @@ after_failure:
   - cat /home/travis/build/joumenharzli/angular-seed/npm-debug.log
 
 # https://docs.travis-ci.com/user/caching/#Caching-directories-(Bundler%2C-dependencies)
-cache:
-  directories: node_modules
+#cache:
+#  directories: node_modules
 
 notifications:
   email:
