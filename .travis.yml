@@ -31,4 +31,4 @@ notifications:
     on_failure: always
 
 script:
-  - npm run test:unit && npm run build:dev && npm run build:prod && npm run build:rollup
+  - npm run test:unit && npm run test:e2e && npm run build:dev && npm run build:prod && npm run build:rollup

@@ -143,6 +143,20 @@ gulp.task('compile:test:watch', ['compile:test'], function (done) {
     gulp.watch([config.paths.sources.test + '**/*.ts', config.paths.sources.app + '**/*.ts'], ['compile:test']);
 });
 
+/**
+ * Compile .ts from e2e src
+ */
+gulp.task('compile:e2e', ['build:dev', 'clean:e2e'], function (done) {
+    compileTsFiles(config.paths.sources.e2e + '**/*.ts', config.paths.destinations.e2e, 'tsconfig.json', done);
+});
+
+/**
+ * Compile .ts from e2e src in watch mode
+ */
+gulp.task('compile:e2e:watch', ['compile:e2e'], function (done) {
+    watchMode = true;
+    gulp.watch([config.paths.sources.e2e + '**/*.ts', config.paths.sources.app + '**/*.ts'], ['compile:e2e']);
+});
 
 /**
  * Copy fonts files to assets

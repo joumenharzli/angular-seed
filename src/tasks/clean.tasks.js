@@ -76,6 +76,13 @@ gulp.task('clean:test', function(done) {
 });
 
 /**
+ * Delete the generated files in e2e dir
+ */
+gulp.task('clean:e2e', function(done) {
+    utils.deleteSync(config.paths.destinations.e2e, done);
+});
+
+/**
  * delete app bundle
  */
 gulp.task('clean:bundles:app', function(done) {

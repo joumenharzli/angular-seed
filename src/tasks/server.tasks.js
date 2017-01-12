@@ -15,7 +15,7 @@ const gulp = require('gulp'),
  * function that launches browserSync
  */
 function launchServer() {
-    browserSync.init({
+    return browserSync.init({
         port: config.project.srvPort,
         server: {
             baseDir: config.paths.destinations.app,
@@ -31,22 +31,30 @@ function launchServer() {
 /**
  * Reload the server
  */
-gulp.task('server:reload', function(done) {
+gulp.task('server:reload', function (done) {
     browserSync.reload();
+    done();
+});
+
+/**
+ * kill the server
+ */
+gulp.task('server:kill', function (done) {
+    browserSync.exit();
     done();
 });
 
 /**
  * Compile Application files and reload Server
  */
-gulp.task('server:compileandreload', function(done) {
+gulp.task('server:compileandreload', function (done) {
     runSequence('compile:app:watch', 'server:reload', done);
 });
 
 /**
  * Copy resources and reload server
  */
-gulp.task('server:copyresandreload', function(done) {
+gulp.task('server:copyresandreload', function (done) {
     runSequence('build:assets', 'build:cssbundle', 'server:reload', done);
 });
 
@@ -54,7 +62,7 @@ gulp.task('server:copyresandreload', function(done) {
 /**
  * Run browserSync server and reload server when changes
  */
-gulp.task('serve:dev', ['build:dev'], function() {
+gulp.task('serve:dev', ['build:dev'], function () {
     launchServer();
     gulp.watch(config.paths.sources.app + '**/*.ts', ['server:compileandreload']);
     gulp.watch(config.paths.sources.resources.resbase + '**/*', ['server:copyresandreload']);
@@ -63,7 +71,6 @@ gulp.task('serve:dev', ['build:dev'], function() {
 /**
  * Run browserSync server
  */
-gulp.task('serve', function(done) {
-    launchServer();
-    done();
+gulp.task('serve', function () {
+    return launchServer();
 });

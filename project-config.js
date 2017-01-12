@@ -40,7 +40,8 @@ const paths = {
             css: basePaths.resources + 'css/',
         },
         tasks: basePaths.src + 'tasks/',
-        test: basePaths.src + 'test/'
+        test: basePaths.src + 'test/',
+        e2e: basePaths.src + 'e2e/',
     },
     destinations: {
         destbase: basePaths.dest,
@@ -53,7 +54,8 @@ const paths = {
             css: basePaths.assets + 'css/',
         },
         test: basePaths.dest + 'test/',
-        coverage: basePaths.dest + 'test/coverage'
+        coverage: basePaths.dest + 'test/coverage',
+        e2e: basePaths.dest + 'e2e/',
     }
 };
 

@@ -1,6 +1,6 @@
 <img src='http://www.hostingpics.net/thumbs/80/51/80/mini_805180logoplug.png' alt='logo'>
 # Angular Plug n Play Seed
-Maven-like seed for angular projects featuring rxjs, ngrx, systemjs, rollup, less, sass, lodash, karma, gulp, yarn and more ready for development and production mode
+Maven-like seed for angular projects featuring rxjs, ngrx, systemjs, rollup, less, sass, lodash, karma, protractor, gulp, yarn and more ready for development and production mode
 
 [![Build Status](https://travis-ci.org/joumenharzli/angular-seed.svg?branch=master)](https://travis-ci.org/joumenharzli/angular-seed)
 [![Dependency Status](https://david-dm.org/joumenharzli/angular-seed.svg)](https://david-dm.org/joumenharzli/angular-seed)
@@ -32,7 +32,7 @@ npm run serve:dev
 - Supports less and sass including autoprefixer and linting
 - Supports styleUrls ( including less/sass/css into ts files )
 - Automatic injection and minification of CSS & JS files
-- You can test with karma and jasmin and generate blank spec
+- You can test with karma, protractor, jasmin and generate blank spec
 - Test coverage ( remapped to TS )
 - Gulp for tasks running
 - Yarn for dependency management
@@ -40,7 +40,6 @@ npm run serve:dev
 
 # Comming Soon
 
-- protactor
 - optimized building with aot
 - version control
 - change log generator 
@@ -75,6 +74,9 @@ npm run test:unit
 
 # test coverage
 npm run test:coverage
+
+# e2e
+npm run test:e2e
 
 # linting app ts files
 npm run lint:app

@@ -11,7 +11,9 @@ const gulp = require('gulp'),
     fs = require('fs'),
     path = require('path'),
     server = require('karma').Server,
-    browserSync = require('browser-sync').create(),
+    errorHandler = require('./errorHandler'),
+    exec = require('child_process').exec,
+    runSequence = require('run-sequence').use(gulp),
     config = require('../../project-config');
 
 /**
@@ -89,4 +91,44 @@ gulp.task('test:coverage', ['test:unit'], function () {
             index: 'index.html',
         },
     });
+});
+
+/**
+ * Execute commande
+ */
+function executeShell(cmd, done) {
+    exec(cmd, function (err, stdout, stderr) {
+        console.log(stdout);
+        console.log(stderr);
+        done(err);
+    });
+}
+
+/**
+ * return node_modules/.bin/app 
+ */
+function getAppinBinDir(app) {
+    let parentDir = __dirname.substr(0, __dirname.length - config.paths.sources.tasks.length);
+    return path.join(parentDir, 'node_modules', '.bin', app);
+}
+
+/**
+ * Update web driver
+ */
+gulp.task('test:updatewebdriver', function (done) {
+    executeShell(getAppinBinDir('webdriver-manager update'), done);
+});
+
+/**
+ * launch protractor
+ */
+gulp.task('test:launchprotractor', ['test:updatewebdriver'], function (done) {
+    executeShell(getAppinBinDir('protractor protractor.config.js'), done);
+});
+
+/**
+ * launch protractor task
+ */
+gulp.task('test:e2e', ['serve', 'compile:e2e'], function (done) {
+    runSequence('test:launchprotractor','server:kill');
 });
