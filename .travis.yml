@@ -12,7 +12,7 @@ os:
 # https://github.com/angular/protractor/blob/master/docs/browser-support.md
 # For the moment, we recommend testing against FireFox 47.
 addons:
-  firefox: "47.0"
+  firefox: "45.0"
 
 before_install:
   - export CHROME_BIN=chromium-browser
