@@ -27,12 +27,13 @@ const config = {
   * for the exact options available.
   */
   jasmineNodeOpts: {
+    defaultTimeoutInterval: 60000,
     showTiming: true,
     showColors: true,
     isVerbose: false,
     includeStackTrace: false,
   },
-
+  allScriptsTimeout: 11000,
 };
 
 /* Capabilities to be passed to the webdriver instance.*/

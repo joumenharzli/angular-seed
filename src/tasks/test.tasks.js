@@ -134,6 +134,9 @@ gulp.task('test:launchprotractor', ['test:updatewebdriver'], function (done) {
  */
 gulp.task('test:e2e', ['serve', 'compile:e2e'], function (done) {
     runSequence('test:launchprotractor', 'server:kill', function () {
+        if (process.env.TRAVIS){
+            process.exit(0);
+        }
         done();
     });
 });
