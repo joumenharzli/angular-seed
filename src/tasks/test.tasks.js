@@ -100,7 +100,7 @@ function executeShell(cmd, done) {
     exec(cmd, function (err, stdout, stderr) {
         console.log(stdout);
         console.log(stderr);
-        if ( err || stderr){
+        if (err) {
             process.exit(1);
         }
         done(err);
@@ -133,5 +133,7 @@ gulp.task('test:launchprotractor', ['test:updatewebdriver'], function (done) {
  * launch protractor task
  */
 gulp.task('test:e2e', ['serve', 'compile:e2e'], function (done) {
-    runSequence('test:launchprotractor','server:kill');
+    runSequence('test:launchprotractor', 'server:kill', function () {
+        done();
+    });
 });
