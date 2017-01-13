@@ -41,7 +41,7 @@ if (process.env.TRAVIS) {
     browserName: 'chrome',
     chromeOptions: {
       'args': ['--no-sandbox'],
-      'binary': process.env.CHROME_BIN,
+//      'binary': process.env.CHROME_BIN_PROTRACTOR,
     }
   };
 } else {
