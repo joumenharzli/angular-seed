@@ -33,6 +33,7 @@ npm run serve:dev
 - Supports styleUrls ( including less/sass/css into ts files )
 - Automatic injection and minification of CSS & JS files
 - You can test with karma, protractor, jasmin and generate blank spec
+- Automatic changelog generation and version control
 - Test coverage ( remapped to TS )
 - Gulp for tasks running
 - Yarn for dependency management
@@ -41,12 +42,12 @@ npm run serve:dev
 # Comming Soon
 
 - optimized building with aot
-- version control
-- change log generator 
 
 # Notes
 
 - Add underscore ( _ ) to less and sass partials
+- use angular commit message guidelines when commiting changes. It will be used when generating the changelog
+    see: https://github.com/angular/angular/blob/master/CONTRIBUTING.md#-commit-message-guidelines
 
 # How to use
 
@@ -104,6 +105,9 @@ npm run build:prod
 
 # build for production mode with Rollup
 npm run build:rollup
+
+# releasing and tagging with git ( you can replace patch with minor or major )
+npm run release:patch
 ```
 
 # License
