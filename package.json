@@ -29,9 +29,9 @@
     "build:rollup": "gulp build:prod --rollup",
     "serve": "gulp serve",
     "serve:dev": "gulp serve:dev",
-    "release:patch": "gulp version:release --patch",
-    "release:minor": "gulp version:release --minor",
-    "release:major": "gulp version:release --major"
+    "release:patch": "gulp version:release --type=patch",
+    "release:minor": "gulp version:release --type=minor",
+    "release:major": "gulp version:release --type=major"
   },
   "dependencies": {
     "@angular/common": "^2.4.2",

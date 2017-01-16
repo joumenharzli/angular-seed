@@ -12,6 +12,8 @@ const gulp = require('gulp'),
     bump = require('gulp-bump'),
     changelog = require('gulp-conventional-changelog'),
     git = require('gulp-git'),
+    runSequence = require('run-sequence').use(gulp),
+    gutil = require('gulp-util'),
     errorHandler = require('./errorHandler');
 
 /**
@@ -38,7 +40,17 @@ function readVersion() {
  * @returns new version
  */
 function incrementVersion(version, incremention) {
-    return semver.inc(version.replace('-SNAPSHOT', ''), incremention);
+    let relVersion = version.replace('-SNAPSHOT', '');
+    switch (incremention) {
+        case 'patch':
+            return semver.inc(relVersion, 'patch');
+        case 'minor':
+            return semver.inc(relVersion, 'minor');
+        case 'major':
+            return semver.inc(relVersion, 'major');
+        default:
+            process.exit(1);
+    }
 }
 
 /**
@@ -63,7 +75,7 @@ function saveVersion(isReleasing, done, incremention = null) {
     let newVersion = isReleasing ? incrementVersion(currentVersion, incremention) : addSnapshotToVersion(currentVersion);
     gulp.src(['./package.json'])
         .pipe(bump({ version: newVersion }))
-        .on('error', erroHandler.fatal)
+        .on('error', errorHandler.fatal)
         .pipe(gulp.dest('./'))
         .on('end', () => done());
 }
@@ -72,7 +84,7 @@ function saveVersion(isReleasing, done, incremention = null) {
  * Save the new version
  */
 gulp.task('version:releaseversion', function (done) {
-    return saveVersion(true, done, gutil.env);
+    saveVersion(true, done, gutil.env.type);
 });
 
 /**
@@ -92,9 +104,10 @@ gulp.task('version:generatechangelog', function () {
  * Commit the new version and push changes to server
  */
 gulp.task('version:pushnewversion', function (done) {
+    let version = readVersion();
     gulp.src(['package.json', 'CHANGELOG.md'])
         .pipe(git.add())
-        .pipe(git.commit('[Prerelease] changed version'))
+        .pipe(git.commit('[Released] version: ' + version))
         .on('end', () => {
             git.push('origin', 'master', done);
         });
@@ -104,16 +117,24 @@ gulp.task('version:pushnewversion', function (done) {
  * Create and push tag
  */
 gulp.task('version:tag', function (done) {
-    var version = readVersion();
-    git.tag(version, 'Created Tag for version: ' + version, errorHandler.warning);
-    git.push('origin', 'master', { args: '--tags' }, done);
+    let version = readVersion();
+    git.tag(version, 'Created Tag for version: ' + version, function () {
+        git.push('origin', 'master', { args: '--tags' }, done);
+    });
+});
+
+
+/**
+ * Save the snapshot version
+ */
+gulp.task('version:snapshotversion', function (done) {
+    saveVersion(false, done);
 });
 
 /**
  * Commit the snapshot version and push changes to server
  */
-gulp.task('version:snapshotversion', function (done) {
-    saveVersion(false, done);
+gulp.task('version:commitsnapshotversion', function (done) {
     gulp.src(['package.json'])
         .pipe(git.add())
         .pipe(git.commit('[Dev] changed version'))
@@ -132,6 +153,7 @@ gulp.task('version:release', function (done) {
         'version:pushnewversion',
         'version:tag',
         'version:snapshotversion',
+        'version:commitsnapshotversion',
         function (error) {
             if (error) {
                 errorHandler.fatal;
