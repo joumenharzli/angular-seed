@@ -1,5 +1,6 @@
 /dist
 /node_modules
+npm-debug.log
 
 # angular currently doesn't support typescript > 2.0.10
 #/.vscode
