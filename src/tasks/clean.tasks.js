@@ -14,49 +14,49 @@ const gulp = require('gulp'),
 /**
  * Alias for deleting dist directory
  */
-gulp.task('clean', ['clean:dist'], function(done) {
+gulp.task('clean', ['clean:dist'], function (done) {
     done();
 });
 
 /**
  * Delete dist directory
  */
-gulp.task('clean:dist', function(done) {
+gulp.task('clean:dist', function (done) {
     utils.deleteSync(config.paths.destinations.destbase, done);
 });
 
 /**
  * Delete app dir
  */
-gulp.task('clean:app', function(done) {
+gulp.task('clean:app', function (done) {
     utils.deleteSync(config.paths.destinations.app, done);
 });
 
 /**
  * Delete the js assets dir
  */
-gulp.task('clean:assetsjs', function(done) {
+gulp.task('clean:assetsjs', function (done) {
     utils.deleteSync(config.paths.destinations.resources.js, done);
 });
 
 /**
  * Delete the img assets dir
  */
-gulp.task('clean:assetsimg', function(done) {
+gulp.task('clean:assetsimg', function (done) {
     utils.deleteSync(config.paths.destinations.resources.img, done);
 });
 
 /**
  * Clean css and fonts in assets dir
  */
-gulp.task('clean:stylesheet', function(done) {
+gulp.task('clean:stylesheet', function (done) {
     utils.deleteSync([config.paths.destinations.resources.fonts, config.paths.destinations.resources.css], done);
 });
 
 /**
  * Delete the generated files from app dir
  */
-gulp.task('clean:appjs', function(done) {
+gulp.task('clean:appjs', function (done) {
     del.sync([
         config.paths.destinations.app + '**',
         '!' + utils.removeSlash(config.paths.destinations.app),
@@ -71,35 +71,42 @@ gulp.task('clean:appjs', function(done) {
 /**
  * Delete the generated files in test dir
  */
-gulp.task('clean:test', function(done) {
+gulp.task('clean:test', function (done) {
     utils.deleteSync(config.paths.destinations.test, done);
+});
+
+/**
+ * Clean aot
+ */
+gulp.task('clean:aot', function (done) {
+    utils.deleteSync(config.paths.destinations.aot, done);
 });
 
 /**
  * Delete the generated files in e2e dir
  */
-gulp.task('clean:e2e', function(done) {
+gulp.task('clean:e2e', function (done) {
     utils.deleteSync(config.paths.destinations.e2e, done);
 });
 
 /**
  * delete app bundle
  */
-gulp.task('clean:bundles:app', function(done) {
+gulp.task('clean:bundles:app', function (done) {
     utils.deleteSync(config.paths.destinations.resources.js + 'app.min.js', done);
 });
 
 /**
  * delete vendors bundle
  */
-gulp.task('clean:bundles:vendors', function(done) {
+gulp.task('clean:bundles:vendors', function (done) {
     utils.deleteSync(config.paths.destinations.resources.js + 'vendors.min.js', done);
 });
 
 /**
  * delete index and systemjs
  */
-gulp.task('clean:index', function(done) {
+gulp.task('clean:index', function (done) {
     utils.deleteSync([
         config.paths.destinations.app + 'index.html',
         config.paths.destinations.app + 'systemjs.config.js',

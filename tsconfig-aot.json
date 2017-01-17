@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
-        "rootDir": "src/",
-        "outDir": "dist/",
+        "rootDir": ".",
+        "outDir": ".",
         "target": "es5",
         "module": "es2015",
         "moduleResolution": "node",
@@ -16,11 +16,11 @@
         "suppressImplicitAnyIndexErrors": true
     },
     "files": [
-        "src/app/app.module.ts",
-        "src/app/main.ts"
+        "dist/aot/src/app/app.module.ts",
+        "dist/aot/src/app/main.ts"
     ],
     "angularCompilerOptions": {
-        "genDir": "dist/aot",
+        "genDir": ".",
         "skipMetadataEmit": true
     }
 }

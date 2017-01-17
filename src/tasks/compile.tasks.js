@@ -18,6 +18,7 @@ const gulp = require('gulp'),
     fs = require('fs'),
     path = require('path'),
     csso = require('csso'),
+    replace = require('gulp-replace'),
     utils = require('./utils'),
     errorHandler = require('./errorHandler'),
     autoprefixer = require('gulp-autoprefixer'),
@@ -104,6 +105,38 @@ function compileAppTsFiles(done) {
 function compileTsFilesRollup(done) {
     compileTsFiles(config.paths.sources.app + '**/*.ts', config.paths.destinations.app, 'tsconfig-exp.json', done);
 }
+
+/**
+ * Copy files to aot dir
+ */
+gulp.task('compile:app:aotprecompile', function (done) {
+    utils.copy([config.paths.sources.app + '**/*'],
+        config.paths.destinations.aot
+        , done);
+});
+
+/**
+ * Compile .ts with ngc
+ */
+gulp.task('compile:app:aotcompile', function (done) {
+    utils.executeShell(utils.getAppinBinDir('ngc -p tsconfig-aot.json'), done);
+});
+
+/**
+ * Create new main for aot
+ */
+gulp.task('compile:app:aotmain', function (done) {
+    gulp.src([config.paths.sources.app + 'main.ts'])
+        .pipe(replace('platformBrowserDynamic', 'platformBrowser'))
+        .pipe(replace('platform-browser-dynamic', 'platform-browser'))
+        .pipe(replace('AppModule', 'AppModuleNgFactory'))
+        .pipe(replace('app.module', 'app.module.ngfactory'))
+        .pipe(replace('bootstrapModule', 'bootstrapModuleFactory'))
+        .pipe(gulp.dest(config.paths.destinations.aot))
+        .on('end', function () {
+            done();
+        });
+});
 
 /**
  * Compile .ts for RollupJS

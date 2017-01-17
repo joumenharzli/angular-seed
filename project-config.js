@@ -56,6 +56,7 @@ const paths = {
         test: basePaths.dest + 'test/',
         coverage: basePaths.dest + 'test/coverage',
         e2e: basePaths.dest + 'e2e/',
+        aot: basePaths.dest + 'aot/src/app',
     }
 };
 

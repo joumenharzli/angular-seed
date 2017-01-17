@@ -245,12 +245,11 @@ gulp.task('build:appbundle', ['compile:app'], function (done) {
 });
 
 /**
- * Compile and bundle files into app.min.js with rollup
+ * Bundle with rollup
  */
-gulp.task('build:appbundle:rollup', ['compile:app:rollup'], function (done) {
-    configEnvironment();
+function bundleWithRollup(mainsrc, bundledest) {
     return rollup.rollup({
-        entry: config.paths.destinations.app + 'main.js',
+        entry: mainsrc,
         external: ['lodash'],
         globals: {
             lodash: '_',
@@ -264,7 +263,7 @@ gulp.task('build:appbundle:rollup', ['compile:app:rollup'], function (done) {
         ],
     }).then(function (bundle) {
         bundle.write({
-            dest: config.paths.destinations.resources.js + 'app.min.js',
+            dest: bundledest,
             sourceMap: false,
             format: 'iife',
             globals: {
@@ -272,6 +271,22 @@ gulp.task('build:appbundle:rollup', ['compile:app:rollup'], function (done) {
             },
         });
     });
+}
+
+/**
+ * Compile and bundle files into app.min.js with rollup
+ */
+gulp.task('build:appbundle:rollup', ['compile:app:rollup'], function (done) {
+    configEnvironment();
+    return bundleWithRollup(config.paths.destinations.app + 'main.js', config.paths.destinations.resources.js + 'app.min.js');
+});
+
+/**
+ * Compile and bundle files into app.min.js with rollup
+ */
+gulp.task('build:appbundle:aotrollup', function (done) {
+    //configEnvironment();
+    return bundleWithRollup(config.paths.destinations.aot + 'main.js', config.paths.destinations.resources.js + 'app.min.js');
 });
 
 /**

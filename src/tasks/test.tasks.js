@@ -14,7 +14,8 @@ const gulp = require('gulp'),
     errorHandler = require('./errorHandler'),
     exec = require('child_process').exec,
     runSequence = require('run-sequence').use(gulp),
-    config = require('../../project-config');
+    config = require('../../project-config'),
+    utils = require('./utils');
 
 /**
  * Create directory if it doesn't exists
@@ -94,39 +95,17 @@ gulp.task('test:coverage', ['test:unit'], function () {
 });
 
 /**
- * Execute commande
- */
-function executeShell(cmd, done) {
-    exec(cmd, function (err, stdout, stderr) {
-        console.log(stdout);
-        console.log(stderr);
-        if (err) {
-            process.exit(1);
-        }
-        done(err);
-    });
-}
-
-/**
- * return node_modules/.bin/app 
- */
-function getAppinBinDir(app) {
-    let parentDir = __dirname.substr(0, __dirname.length - config.paths.sources.tasks.length);
-    return path.join(parentDir, 'node_modules', '.bin', app);
-}
-
-/**
  * Update web driver
  */
 gulp.task('test:updatewebdriver', function (done) {
-    executeShell(getAppinBinDir('webdriver-manager update'), done);
+    utils.executeShell(utils.getAppinBinDir('webdriver-manager update'), done);
 });
 
 /**
  * launch protractor
  */
 gulp.task('test:launchprotractor', ['test:updatewebdriver'], function (done) {
-    executeShell(getAppinBinDir('protractor protractor.config.js'), done);
+    utils.executeShell(utils.getAppinBinDir('protractor protractor.config.js'), done);
 });
 
 /**
@@ -134,7 +113,7 @@ gulp.task('test:launchprotractor', ['test:updatewebdriver'], function (done) {
  */
 gulp.task('test:e2e', ['serve', 'compile:e2e'], function (done) {
     runSequence('test:launchprotractor', 'server:kill', function () {
-        if (process.env.TRAVIS){
+        if (process.env.TRAVIS) {
             process.exit(0);
         }
         done();
