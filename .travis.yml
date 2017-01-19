@@ -8,9 +8,6 @@ install: true # travis/yarn bug
 branches:
   only: master
 
-os:
-  - linux
-
 addons:
   packages:
     - unzip
