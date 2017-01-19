@@ -41,5 +41,26 @@ notifications:
     on_success: never
     on_failure: always
 
+matrix:
+  include:
+    - os: linux
+      node_js: "6"
+      env: JOB=test:unit
+    - os: linux
+      node_js: "6"
+      env: JOB=test:e2e
+    - os: linux
+      node_js: "6"
+      env: JOB=build:dev
+    - os: linux
+      node_js: "6"
+      env: JOB=build:prod
+    - os: linux
+      node_js: "6"
+      env: JOB=build:rollup
+    - os: linux
+      node_js: "6"
+      env: JOB=build:aot      
+
 script:
-  - npm run test:e2e && npm run test:unit && npm run build:dev && npm run build:prod && npm run build:rollup && npm run build:aot
+  - npm run $JOB
