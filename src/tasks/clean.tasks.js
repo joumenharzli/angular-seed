@@ -79,7 +79,7 @@ gulp.task('clean:test', function (done) {
  * Clean aot
  */
 gulp.task('clean:aot', function (done) {
-    utils.deleteSync(config.paths.destinations.aot, done);
+    utils.deleteSync(config.paths.destinations.aotbase, done);
 });
 
 /**

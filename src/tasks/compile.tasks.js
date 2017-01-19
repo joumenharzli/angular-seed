@@ -60,7 +60,7 @@ function compileTsFiles(filesSrc, filesDest, configFile, done) {
  */
 function integrateCSS(file, enc, cb) {
     /* Check if the file is a component */
-    if (file.path.indexOf('component.js') > -1) {
+    if (file.path.indexOf('component.js') > -1 || file.path.indexOf('component.ts') > -1) {
         /* read file content */
         let data = file.contents.toString('utf8');
 
@@ -109,10 +109,25 @@ function compileTsFilesRollup(done) {
 /**
  * Copy files to aot dir
  */
-gulp.task('compile:app:aotprecompile', function (done) {
-    utils.copy([config.paths.sources.app + '**/*'],
-        config.paths.destinations.aot
-        , done);
+gulp.task('compile:app:aotcopyfiles', function (done) {
+    gulp.src(config.paths.sources.app + '**/*.ts')
+        .pipe(gulp.dest(config.paths.destinations.aot))
+        .on('error', errorHandler.fatal)
+        .on('end', function () {
+            done();
+        });
+});
+
+gulp.task('compile:app:aotinsertstyle', function (done) {
+    gulp.src(config.paths.destinations.aot + '**/*.component.ts')
+            .pipe(through.obj(function (file, enc, cb) {
+            integrateCSS(file, enc, cb);
+        }))
+        .pipe(gulp.dest(config.paths.destinations.aot))
+        .on('error', errorHandler.fatal)
+        .on('end', function () {
+            done();
+        });
 });
 
 /**
@@ -125,7 +140,7 @@ gulp.task('compile:app:aotcompile', function (done) {
 /**
  * Create new main for aot
  */
-gulp.task('compile:app:aotmain', function (done) {
+gulp.task('compile:app:aoteditmain', function (done) {
     gulp.src([config.paths.sources.app + 'main.ts'])
         .pipe(replace('platformBrowserDynamic', 'platformBrowser'))
         .pipe(replace('platform-browser-dynamic', 'platform-browser'))
@@ -226,7 +241,7 @@ gulp.task('compile:copyjs', ['clean:stylesheet'], function (done) {
  * minify is true when including generated 
  * css into js files
  */
-function compileStylestoCSS(compiler, source, destination, extension, minify, done) {
+function compileStylestoCSS(compiler, source, destination, minify, done) {
     gulp.src(source)
         .pipe(sourcemaps.init())
         .pipe(compiler())
@@ -248,7 +263,6 @@ function compileStylesToCSSFromApp(compiler, extension, done) {
         [config.paths.sources.app + '**/*.' + extension,
         '!' + config.paths.sources.app + '**/_*.' + extension],
         config.paths.destinations.app,
-        extension,
         true,
         done);
 }
@@ -261,7 +275,6 @@ function compileStylesToCSSFromRes(compiler, extension, done) {
         [config.paths.sources.resources.css + '**/*.' + extension,
         '!' + config.paths.sources.resources.css + '**/_*.' + extension],
         config.paths.destinations.resources.css,
-        extension,
         false,
         done);
 }
@@ -313,6 +326,37 @@ gulp.task('compile:sass:included', ['clean:appjs'], function (done) {
  */
 gulp.task('compile:copycss:included', ['clean:appjs'], function (done) {
     utils.copy(config.paths.sources.app + '**/*.css', config.paths.destinations.app, done);
+});
+
+/**
+ * Generate css files from less in app [aot]
+ */
+gulp.task('compile:less:aot', function (done) {
+    compileStylestoCSS(less,
+        [config.paths.sources.app + '**/*.less',
+        '!' + config.paths.sources.app + '**/_*.less'],
+        config.paths.destinations.aot,
+        true,
+        done);
+});
+
+/**
+ * Generate css files from aot sass in app [aot]
+ */
+gulp.task('compile:sass:aot', function (done) {
+    compileStylestoCSS(sass,
+        [config.paths.sources.app + '**/*.scss',
+        '!' + config.paths.sources.app + '**/_*.scss'],
+        config.paths.destinations.aot,
+        true,
+        done);
+});
+
+/**
+ * Copy aot css files in app [aot]
+ */
+gulp.task('compile:copycss:aot', function (done) {
+    utils.copy(config.paths.sources.app + '**/*.css', config.paths.destinations.aot, done);
 });
 
 /*

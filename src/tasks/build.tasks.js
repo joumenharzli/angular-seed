@@ -159,7 +159,7 @@ gulp.task('build:patchenvironment', function (done) {
  */
 gulp.task('build:vendorsbundle', function (done) {
     let libs = config.libs;
-    if (buildMethod === buildMethods.rollup) {
+    if (buildMethod === buildMethods.rollup || buildMethod === buildMethods.aot) {
         libs = libs.concat(config.extLibs);
     }
     gulp.src(libs)
@@ -284,8 +284,8 @@ gulp.task('build:appbundle:rollup', ['compile:app:rollup'], function (done) {
 /**
  * Compile and bundle files into app.min.js with rollup
  */
-gulp.task('build:appbundle:aotrollup', function (done) {
-    //configEnvironment();
+gulp.task('build:appbundle:rollupaot', function (done) {
+    configEnvironment();
     return bundleWithRollup(config.paths.destinations.aot + 'main.js', config.paths.destinations.resources.js + 'app.min.js');
 });
 
@@ -298,7 +298,19 @@ gulp.task('build:prod', ['build:preprod'], function (done) {
             done();
         });
     } else if (buildMethod === buildMethods.aot) {
-        done(); // Not supported yet
+        runSequence(
+        'compile:sass:aot',
+        'compile:less:aot',
+        'compile:copycss:aot',
+        'compile:app:aotcopyfiles',
+        'compile:app:aotinsertstyle',
+        'compile:app:aotcompile',
+        'compile:app:aoteditmain',
+        'compile:app:aotcompile',
+        'build:appbundle:rollupaot', 
+        'clean:aot', function () {
+            done();
+        });
     } else {
         runSequence('build:appbundle', 'clean:appjs', function () {
             done();
