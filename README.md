@@ -1,6 +1,6 @@
 <img src='http://www.hostingpics.net/thumbs/80/51/80/mini_805180logoplug.png' alt='logo'>
 # Angular Plug n Play Seed
-Maven-like seed for angular projects featuring rxjs, ngrx, systemjs, rollup, less, sass, lodash, karma, protractor, gulp, yarn and more ready for development and production mode
+Maven-like seed for angular projects featuring rxjs, ngrx, AOT, systemjs, rollup, less, sass, lodash, karma, protractor, gulp, yarn and more ready for development and production mode
 
 [![Build Status](https://travis-ci.org/joumenharzli/angular-seed.svg?branch=master)](https://travis-ci.org/joumenharzli/angular-seed)
 [![Dependency Status](https://david-dm.org/joumenharzli/angular-seed.svg)](https://david-dm.org/joumenharzli/angular-seed)
@@ -25,6 +25,7 @@ npm run serve:dev
 
 # Features
 
+- Supports Ahead-Of-Time compilation ( AOT )
 - Rollup module bundler
 - SystemJS for module loading / bundling
 - Can be used in Production and Developing mode
@@ -38,10 +39,6 @@ npm run serve:dev
 - Gulp for tasks running
 - Yarn for dependency management
 - Html minification
-
-# Comming Soon
-
-- optimized building with aot
 
 # Notes
 
@@ -105,6 +102,9 @@ npm run build:prod
 
 # build for production mode with Rollup
 npm run build:rollup
+
+# build for production mode with Rollup and AOT
+npm run build:aot
 
 # releasing and tagging with git ( you can replace patch with minor or major )
 npm run release:patch

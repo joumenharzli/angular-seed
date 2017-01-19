@@ -27,6 +27,7 @@
     "build:dev": "gulp build:dev",
     "build:prod": "gulp build:prod",
     "build:rollup": "gulp build:prod --rollup",
+    "build:aot": "gulp build:prod --aot",
     "serve": "gulp serve",
     "serve:dev": "gulp serve:dev",
     "release:patch": "gulp version:release --type=patch",
