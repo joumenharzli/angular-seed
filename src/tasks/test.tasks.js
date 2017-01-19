@@ -101,6 +101,13 @@ gulp.task('test:updatewebdriver', function (done) {
     utils.executeShell(utils.getAppinBinDir('webdriver-manager update'), done);
 });
 
+/** 
+ * Shutdown web driver
+ */
+gulp.task('test:shutdownwebdriver', function (done) {
+    utils.executeShell(utils.getAppinBinDir('webdriver-manager shutdown'), done);
+});
+
 /**
  * launch protractor
  */
@@ -112,10 +119,7 @@ gulp.task('test:launchprotractor', ['test:updatewebdriver'], function (done) {
  * launch protractor task
  */
 gulp.task('test:e2e', ['serve', 'compile:e2e'], function (done) {
-    runSequence('test:launchprotractor', 'server:kill', function () {
-        if (process.env.TRAVIS) {
-            process.exit(0);
-        }
+    runSequence('test:launchprotractor', 'server:kill', 'test:shutdownwebdriver', function () {
         done();
     });
 });

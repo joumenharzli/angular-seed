@@ -20,6 +20,10 @@ const config = {
   /* useAllAngular2AppRoots: tells Protractor to wait for any angular2 apps on the page */
   useAllAngular2AppRoots: true,
 
+ onPrepare: function() {
+    browser.ignoreSynchronization = false;
+  },
+  
   /*
   * Options to be passed to jasmine.
   *
@@ -27,13 +31,13 @@ const config = {
   * for the exact options available.
   */
   jasmineNodeOpts: {
-    defaultTimeoutInterval: 60000,
+//    defaultTimeoutInterval: 60000,
     showTiming: true,
     showColors: true,
     isVerbose: false,
     includeStackTrace: false,
   },
-  allScriptsTimeout: 11000,
+//  allScriptsTimeout: 11000,
 };
 
 /* Capabilities to be passed to the webdriver instance.*/
