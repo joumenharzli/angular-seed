@@ -4,7 +4,7 @@ Maven-like seed for angular projects featuring rxjs, ngrx, AOT, systemjs, rollup
 
 [![Build Status](https://travis-ci.org/joumenharzli/angular-seed.svg?branch=master)](https://travis-ci.org/joumenharzli/angular-seed)
 [![Dependency Status](https://david-dm.org/joumenharzli/angular-seed.svg)](https://david-dm.org/joumenharzli/angular-seed)
-[![devDependency Status](https://david-dm.org/joumenharzli/angular-seed/dev-status.svg)](https://david-dm.org/joumenharzli/angular-seed#info=devDependencies)
+[![devDependency Status](https://david-dm.org/joumenharzli/angular-seed/dev-status.svg)](https://david-dm.org/joumenharzli/angular-seed?type=dev)
 
 # How to start
 
